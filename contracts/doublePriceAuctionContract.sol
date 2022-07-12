@@ -19,7 +19,7 @@ interface DoublePriceAuctionContractInterface {
     /// @return success Whether the transfer was successful or not
     function transfer(address _to, uint256 _value)  external returns (bool success);
 
-    function registerBid(uint256 _value, uint256 _sourceType) external returns (bool sucess);
+    function registerBid(uint256 _value, uint256 _sourceType) external returns (uint256);
 
     /// @notice send `_value` token to `_to` from `_from` on the condition it is approved by `_from`
     /// @param _from The address of the sender
@@ -69,11 +69,11 @@ contract DoublePriceAuctionContract is DoublePriceAuctionContractInterface {
         symbol = _tokenSymbol;                               // Set the symbol for display purposes
     }
 
-    function registerBid(uint256 _value, uint256 _sourceType) public override returns (bool sucess) {
+    function registerBid(uint256 _value, uint256 _sourceType) public override returns (uint256) {
 
         // bids[msg.sender] = Bid(0, _value, _sourceType);
         bids.push(Bid(0, _value, _sourceType));
-        return true;
+        return bids.length - 1;
     }
 
     function transfer(address _to, uint256 _value) public override returns (bool success) {
