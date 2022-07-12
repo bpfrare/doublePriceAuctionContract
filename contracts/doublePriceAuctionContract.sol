@@ -3,6 +3,11 @@
 pragma solidity >=0.5.0 <=0.8.15;
 
 interface DoublePriceAuctionContractInterface {
+    struct Bid {
+        uint256 amount;
+        uint256 value;
+        uint256 sourceType;
+    }
 
     /// @param _owner The address from which the balance will be retrieved
     /// @return balance the balance
@@ -13,6 +18,8 @@ interface DoublePriceAuctionContractInterface {
     /// @param _value The amount of token to be transferred
     /// @return success Whether the transfer was successful or not
     function transfer(address _to, uint256 _value)  external returns (bool success);
+
+    function registerBid(uint256 _value, uint256 _sourceType) external returns (bool sucess);
 
     /// @notice send `_value` token to `_to` from `_from` on the condition it is approved by `_from`
     /// @param _from The address of the sender
@@ -37,9 +44,12 @@ interface DoublePriceAuctionContractInterface {
 }
 
 contract DoublePriceAuctionContract is DoublePriceAuctionContractInterface {
+    
     uint256 constant private MAX_UINT256 = 2**256 - 1;
     mapping (address => uint256) public balances;
     mapping (address => mapping (address => uint256)) public allowed;
+    // mapping (address => Bid) public bids;
+    Bid[] private bids;
     uint256 public totalSupply;
     /*
     NOTE:
@@ -57,6 +67,13 @@ contract DoublePriceAuctionContract is DoublePriceAuctionContractInterface {
         name = _tokenName;                                   // Set the name for display purposes
         decimals = _decimalUnits;                            // Amount of decimals for display purposes
         symbol = _tokenSymbol;                               // Set the symbol for display purposes
+    }
+
+    function registerBid(uint256 _value, uint256 _sourceType) public override returns (bool sucess) {
+
+        // bids[msg.sender] = Bid(0, _value, _sourceType);
+        bids.push(Bid(0, _value, _sourceType));
+        return true;
     }
 
     function transfer(address _to, uint256 _value) public override returns (bool success) {
