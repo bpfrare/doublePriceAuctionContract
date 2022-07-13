@@ -43,13 +43,8 @@ library IterableMapping {
         self.size --;
     }
 
-    // function size(itmap storage self) public view returns (uint) {
-    //     return self.size;
-    // }
-
-    function get(itmap storage self, address _key) public view returns (uint256, uint256) {
-        Bid memory bid = self.data[_key].value;
-        return (bid.amount, bid.value);
+    function get(itmap storage self, address _key) public view returns (Bid memory) {
+        return self.data[_key].value;
     }
 
     function contains(itmap storage self) internal view returns (bool) {
