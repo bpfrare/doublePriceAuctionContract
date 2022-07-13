@@ -2,8 +2,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.5.0 <=0.8.15;
 
+import "./IterableMapping.sol";
+
 interface DoublePriceAuctionContractInterface {
     struct Bid {
+        address bidder;
         uint256 amount;
         uint256 value;
         uint256 sourceType;
@@ -43,13 +46,16 @@ interface DoublePriceAuctionContractInterface {
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 }
 
-contract DoublePriceAuctionContract is DoublePriceAuctionContractInterface {
+contract DoublePriceAuctionContract {
+
+    event Transfer(address indexed _from, address indexed _to, uint256 _value);
+    event Approval(address indexed _owner, address indexed _spender, uint256 _value);
     
     uint256 constant private MAX_UINT256 = 2**256 - 1;
     mapping (address => uint256) public balances;
     mapping (address => mapping (address => uint256)) public allowed;
-    // mapping (address => Bid) public bids;
-    Bid[] private bids;
+    itmap bids;
+    using IterableMapping for itmap;
     uint256 public totalSupply;
     /*
     NOTE:
@@ -69,14 +75,48 @@ contract DoublePriceAuctionContract is DoublePriceAuctionContractInterface {
         symbol = _tokenSymbol;                               // Set the symbol for display purposes
     }
 
-    function registerBid(uint256 _value, uint256 _sourceType) public override returns (uint256) {
-
-        // bids[msg.sender] = Bid(0, _value, _sourceType);
-        bids.push(Bid(0, _value, _sourceType));
-        return bids.length - 1;
+    function registerBid(uint256 _value, uint256 _sourceType) public returns (uint size) {
+        bids.insert(msg.sender, 0, _value, _sourceType);
+        return bids.size;
     }
 
-    function transfer(address _to, uint256 _value) public override returns (bool success) {
+    function getSizeBids() public view returns (uint size) {
+        return bids.size;
+    }
+
+    // function getBids() public view returns (uint256[] memory value, uint256[] memory amount) {
+    //     value = new uint256[](bids.size);
+    //     amount = new uint256[](bids.size);
+    //     for (
+    //         Iterator i = bids.iterateStart();
+    //         bids.iterateValid(i);
+    //         i = bids.iterateNext(i)
+    //     ) {
+    //         (, Bid memory bid) = bids.iterateGet(i);
+    //         value.push(bid.value) ;
+    //         amount.push(bid.amount);
+    //     }
+
+
+    // }
+
+    // function placeBid(uint256) public override {
+
+    // }
+
+    // Computes the sum of all stored data.
+    function sum() public view returns (uint s) {
+        for (
+            Iterator i = bids.iterateStart();
+            bids.iterateValid(i);
+            i = bids.iterateNext(i)
+        ) {
+            (, Bid memory bid) = bids.iterateGet(i);
+            s += bid.value;
+        }
+    }
+
+    function transfer(address _to, uint256 _value) public returns (bool success) {
         require(balances[msg.sender] >= _value, "token balance is lower than the value requested");
         balances[msg.sender] -= _value;
         balances[_to] += _value;
@@ -84,7 +124,7 @@ contract DoublePriceAuctionContract is DoublePriceAuctionContractInterface {
         return true;
     }
 
-    function transferFrom(address _from, address _to, uint256 _value) public override returns (bool success) {
+    function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
         uint256 allowance = allowed[_from][msg.sender];
         require(balances[_from] >= _value && allowance >= _value, "token balance or allowance is lower than amount requested");
         balances[_to] += _value;
@@ -96,17 +136,17 @@ contract DoublePriceAuctionContract is DoublePriceAuctionContractInterface {
         return true;
     }
 
-    function balanceOf(address _owner) public override view returns (uint256 balance) {
+    function balanceOf(address _owner) public view returns (uint256 balance) {
         return balances[_owner];
     }
 
-    function approve(address _spender, uint256 _value) public override returns (bool success) {
+    function approve(address _spender, uint256 _value) public returns (bool success) {
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value); //solhint-disable-line indent, no-unused-vars
         return true;
     }
 
-    function allowance(address _owner, address _spender) public override view returns (uint256 remaining) {
+    function allowance(address _owner, address _spender) public view returns (uint256 remaining) {
         return allowed[_owner][_spender];
     }
 }
