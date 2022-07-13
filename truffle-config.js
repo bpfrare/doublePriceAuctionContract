@@ -82,6 +82,11 @@ module.exports = {
     reporter: 'eth-gas-reporter',
     reporterOptions: {
       excludeContracts: ['Migrations']
+    },
+    reporterOptions: {
+      currency: 'BRL',
+      coinmarketcap: 'b491ea23-d198-4fb1-8a43-ef297f318df6',
+      showTimeSpent: true
     }
   },
 
