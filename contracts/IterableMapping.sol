@@ -43,6 +43,10 @@ library IterableMapping {
         self.size --;
     }
 
+    function addAmount(itmap storage self, address _key, uint256 amount) internal {
+        self.data[_key].value.amount += amount;
+    }
+
     function get(itmap storage self, address _key) public view returns (Bid memory) {
         return self.data[_key].value;
     }

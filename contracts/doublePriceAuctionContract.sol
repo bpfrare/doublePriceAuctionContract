@@ -100,9 +100,9 @@ contract DoublePriceAuctionContract {
         }
     }
 
-    // function placeBid(uint256) public override {
-
-    // }
+    function placeBid(uint256 _amount) public {
+        bids.addAmount(msg.sender, _amount);
+    }
 
     // Computes the sum of all stored data.
     function sum() public view returns (uint s) {
