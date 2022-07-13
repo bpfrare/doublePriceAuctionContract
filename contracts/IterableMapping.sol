@@ -47,8 +47,8 @@ library IterableMapping {
         return self.data[_key].value;
     }
 
-    function contains(itmap storage self) internal view returns (bool) {
-        return self.data[msg.sender].keyIndex > 0;
+    function contains(itmap storage self, address _key) internal view returns (bool) {
+        return self.data[_key].keyIndex > 0;
     }
 
     function iterateStart(itmap storage self) internal view returns (Iterator) {
