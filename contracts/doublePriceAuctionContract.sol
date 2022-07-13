@@ -80,25 +80,25 @@ contract DoublePriceAuctionContract {
         return bids.size;
     }
 
-    function getSizeBids() public view returns (uint size) {
+    function getBidsSize() public view returns (uint size) {
         return bids.size;
     }
 
-    // function getBids() public view returns (uint256[] memory value, uint256[] memory amount) {
-    //     value = new uint256[](bids.size);
-    //     amount = new uint256[](bids.size);
-    //     for (
-    //         Iterator i = bids.iterateStart();
-    //         bids.iterateValid(i);
-    //         i = bids.iterateNext(i)
-    //     ) {
-    //         (, Bid memory bid) = bids.iterateGet(i);
-    //         value.push(bid.value) ;
-    //         amount.push(bid.amount);
-    //     }
-
-
-    // }
+    function getBids() public view returns (uint256[] memory value, uint256[] memory amount) {
+        value = new uint256[](bids.size);
+        amount = new uint256[](bids.size);
+        uint j = 0;
+        for (
+            Iterator i = bids.iterateStart();
+            bids.iterateValid(i);
+            i = bids.iterateNext(i)
+        ) {
+            (, Bid memory bid) = bids.iterateGet(i);
+            value[j] = bid.value;
+            amount[j] = bid.amount;
+            j++;
+        }
+    }
 
     // function placeBid(uint256) public override {
 
