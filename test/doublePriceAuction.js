@@ -5,21 +5,21 @@ contract('DoublePriceAuction', (accounts) => {
         const doublePriceAuctionInstance = await DoublePriceAuction.deployed();
         await doublePriceAuctionInstance.registerBid(1,10);
         let idx = await doublePriceAuctionInstance.getBidsSize.call();
-        assert.equal(idx, 1, 'The index of the first element should be 0');
+        assert.equal(idx, 1, 'The number of bids should be 1');
     });
 
     it("shouldn't register same bidder", async () => {
         const doublePriceAuctionInstance = await DoublePriceAuction.deployed();
         await doublePriceAuctionInstance.registerBid(2,20);
         let idx = await doublePriceAuctionInstance.getBidsSize.call();
-        assert.equal(idx, 1, 'The index of the first element should be 1');
+        assert.equal(idx, 1, 'The number of bids should be 1');
     });
 
     it('should register another bidder', async () => {
         const doublePriceAuctionInstance = await DoublePriceAuction.deployed();
         await doublePriceAuctionInstance.registerBid(3,20, {from: accounts[1]});
         let idx = await doublePriceAuctionInstance.getBidsSize.call();
-        assert.equal(idx, 2, 'The index of the first element should be 1');
+        assert.equal(idx, 2, 'The number of bids should be 2');
     });
 
     it('should increment their bid', async () => {
@@ -37,5 +37,12 @@ contract('DoublePriceAuction', (accounts) => {
     //         await doublePriceAuctionInstance.registerBid(i,i*10);
     //     }
     // });
+
+    it('should register an Offer', async () => {
+        const doublePriceAuctionInstance = await DoublePriceAuction.deployed();
+        await doublePriceAuctionInstance.registerOffer(10,100);
+        let idx = await doublePriceAuctionInstance.getOffersSize.call();
+        assert.equal(idx, 1, 'The number of offer should be 1');
+    });
 
 });

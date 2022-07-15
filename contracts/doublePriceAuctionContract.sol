@@ -49,6 +49,7 @@ contract DoublePriceAuctionContract {
     mapping (address => uint256) public balances;
     mapping (address => mapping (address => uint256)) public allowed;
     itmap bids;
+    itmap offers;
     using IterableMapping for itmap;
     uint256 public totalSupply;
     /*
@@ -92,10 +93,37 @@ contract DoublePriceAuctionContract {
             amount[j] = bid.amount;
             j++;
         }
-    }
+    } 
 
     function placeBid(uint256 _amount) public {
         bids.addAmount(msg.sender, _amount);
+    }
+
+    function registerOffer(uint256 _value, uint256 _sourceType) public returns (uint size) {
+        offers.insert(msg.sender, 0, _value, _sourceType);
+        return offers.size;
+    }
+
+    function placeOffer(uint256 _amount) public {
+        offers.addAmount(msg.sender, _amount);
+    }
+
+    function getOffers() public view returns (Bid[] memory value) {
+        value = new Bid[](offers.size);
+        uint j = 0;
+        for (
+            Iterator i = offers.iterateStart();
+            offers.iterateValid(i);
+            i = offers.iterateNext(i)
+        ) {
+            (, Bid memory offer) = offers.iterateGet(i);
+            value[j] = offer;
+            j++;
+        }
+    }
+
+    function getOffersSize() public view returns (uint size) {
+        return offers.size;
     }
 
     // Computes the sum of all stored data.
