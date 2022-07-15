@@ -5,12 +5,6 @@ pragma solidity >=0.5.0 <=0.8.15;
 import "./IterableMapping.sol";
 
 interface DoublePriceAuctionContractInterface {
-    struct Bid {
-        address bidder;
-        uint256 amount;
-        uint256 value;
-        uint256 sourceType;
-    }
 
     /// @param _owner The address from which the balance will be retrieved
     /// @return balance the balance

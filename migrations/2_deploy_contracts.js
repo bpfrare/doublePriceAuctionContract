@@ -1,4 +1,4 @@
-const DoublePriceAuctionContract = artifacts.require("doublePriceAuctionContract");
+const DoublePriceAuctionContract = artifacts.require("DoublePriceAuctionContract");
 const IterableMapping = artifacts.require("IterableMapping");
 
 module.exports = function(deployer) {
