@@ -79,9 +79,8 @@ contract DoublePriceAuctionContract {
         return bids.size;
     }
 
-    function getBids() public view returns (uint256[] memory value, uint256[] memory amount) {
-        value = new uint256[](bids.size);
-        amount = new uint256[](bids.size);
+    function getBids() public view returns (Bid[] memory value) {
+        value = new Bid[](bids.size);
         uint j = 0;
         for (
             Iterator i = bids.iterateStart();
@@ -89,8 +88,7 @@ contract DoublePriceAuctionContract {
             i = bids.iterateNext(i)
         ) {
             (, Bid memory bid) = bids.iterateGet(i);
-            value[j] = bid.value;
-            amount[j] = bid.amount;
+            value[j] = bid;
             j++;
         }
     } 

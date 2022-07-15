@@ -26,8 +26,8 @@ contract('DoublePriceAuction', (accounts) => {
         const doublePriceAuctionInstance = await DoublePriceAuction.deployed();
         await doublePriceAuctionInstance.placeBid(50);
         const aux = await doublePriceAuctionInstance.getBids.call();
-        assert.equal(aux[0][0], 2, "The value of bid should be 2");
-        assert.equal(aux[1][0], 50, "The amount of bid should be 50");
+        assert.equal(aux[0].value, 2, "The value of bid should be 2");
+        assert.equal(aux[0].amount, 50, "The amount of bid should be 50");
 
     });
 
