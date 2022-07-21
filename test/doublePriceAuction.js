@@ -45,4 +45,36 @@ contract('DoublePriceAuction', (accounts) => {
         assert.equal(idx, 1, 'The number of offer should be 1');
     });
 
+    it("shouldn't find an Offer", async () => {
+        const doublePriceAuctionInstance = await DoublePriceAuction.deployed();
+        await doublePriceAuctionInstance.registerOffer(10,100);
+        await doublePriceAuctionInstance.placeOffer(50);
+        let auxAddr = await doublePriceAuctionInstance.findOffer.call(accounts[0])
+        assert.equal(auxAddr, 0x0);
+    });
+
+    it("shouldn't find an Offer", async () => {
+        const doublePriceAuctionInstance = await DoublePriceAuction.deployed();
+        await doublePriceAuctionInstance.registerBid(1,2);
+        await doublePriceAuctionInstance.registerOffer(10,100);
+        await doublePriceAuctionInstance.placeOffer(50);
+        let auxAddr = await doublePriceAuctionInstance.findOffer.call(accounts[0])
+        assert.equal(auxAddr, 0x0);
+    });
+
+    it("should close a deal", async () => {
+        const doublePriceAuctionInstance = await DoublePriceAuction.deployed();
+        await doublePriceAuctionInstance.registerBid(1,2);
+        await doublePriceAuctionInstance.placeBid(10);
+        await doublePriceAuctionInstance.registerOffer(1,2, {from: accounts[1]});
+        await doublePriceAuctionInstance.placeOffer(50, {from: accounts[1]});
+
+
+        await doublePriceAuctionInstance.processDA(accounts[0]);
+        let bc0 = await doublePriceAuctionInstance.balanceOf.call(accounts[0]);
+        assert.equal(bc0.toNumber(), 990);
+        let bc1 = await doublePriceAuctionInstance.balanceOf.call(accounts[1]);
+        assert.equal(bc1.toNumber(), 10);
+    });
+
 });

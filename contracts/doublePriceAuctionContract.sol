@@ -124,6 +124,42 @@ contract DoublePriceAuctionContract {
         return offers.size;
     }
 
+    function findOffer(address _bid) public view returns (address offerAddr) {
+        Bid memory bid = bids.get(_bid);
+        for (
+            Iterator i = offers.iterateStart();
+            offers.iterateValid(i);
+            i = offers.iterateNext(i)
+        ) {
+            (address _offerAddr, Bid memory _offer) = offers.iterateGet(i);
+            if (_offerAddr != _bid && bid.value == _offer.value && _offer.amount > 0) {
+                return _offerAddr;
+            }
+        }
+    }
+
+    function processDA(address _bid) public returns (bool success) {
+        uint256 _value;
+
+        Bid memory bid = bids.get(_bid);
+        require(balances[_bid] >= bid.amount, "token balance is lower than the value requested");
+        
+        address offer = findOffer(_bid);
+        Bid memory bidOffer = offers.get(offer);
+        require(offer != address(0), "didn't find any match");
+        if (bidOffer.amount < bid.amount) {
+            _value = bidOffer.amount;
+        } else {
+            _value = bid.amount;
+        }
+        // decrementar as listas de oferta e procura
+        //Transfer
+        balances[_bid] -= _value;
+        balances[offer] += _value;
+        emit Transfer(_bid, offer, _value); //solhint-disable-line indent, no-unused-vars
+        return true;
+    }
+
     // Computes the sum of all stored data.
     function sum() public view returns (uint s) {
         for (
