@@ -48,6 +48,11 @@ library IterableMapping {
         self.data[_key].value.amount += amount;
     }
 
+    function decAmount(itmap storage self, address _key, uint256 amount) internal {
+        require(self.data[_key].keyIndex > 0, "User not register yet");
+        self.data[_key].value.amount -= amount;
+    }
+
     function get(itmap storage self, address _key) public view returns (Bid memory) {
         require(self.data[_key].keyIndex > 0, "User not register yet");
         return self.data[_key].value;

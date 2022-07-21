@@ -75,6 +75,11 @@ contract('DoublePriceAuction', (accounts) => {
         assert.equal(bc0.toNumber(), 990);
         let bc1 = await doublePriceAuctionInstance.balanceOf.call(accounts[1]);
         assert.equal(bc1.toNumber(), 10);
+
+        let bid = await doublePriceAuctionInstance.getBid.call();
+        let offer = await doublePriceAuctionInstance.getOffer.call({from: accounts[1]});
+        assert.equal(bid.amount, 0);
+        assert.equal(offer.amount, 40);
     });
 
 });

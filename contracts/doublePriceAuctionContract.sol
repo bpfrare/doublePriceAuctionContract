@@ -75,8 +75,16 @@ contract DoublePriceAuctionContract {
         return bids.size;
     }
 
+    function placeBid(uint256 _amount) public {
+        bids.addAmount(msg.sender, _amount);
+    }
+
     function getBidsSize() public view returns (uint size) {
         return bids.size;
+    }
+
+    function getBid() public view returns (Bid memory) {
+        return bids.get(msg.sender);
     }
 
     function getBids() public view returns (Bid[] memory value) {
@@ -91,10 +99,6 @@ contract DoublePriceAuctionContract {
             value[j] = bid;
             j++;
         }
-    } 
-
-    function placeBid(uint256 _amount) public {
-        bids.addAmount(msg.sender, _amount);
     }
 
     function registerOffer(uint256 _value, uint256 _sourceType) public returns (uint size) {
@@ -122,6 +126,10 @@ contract DoublePriceAuctionContract {
 
     function getOffersSize() public view returns (uint size) {
         return offers.size;
+    }
+
+    function getOffer() public view returns (Bid memory) {
+        return offers.get(msg.sender);
     }
 
     function findOffer(address _bid) public view returns (address offerAddr) {
@@ -153,23 +161,14 @@ contract DoublePriceAuctionContract {
             _value = bid.amount;
         }
         // decrementar as listas de oferta e procura
+        bids.decAmount(_bid, _value);
+        offers.decAmount(offer, _value);
+
         //Transfer
         balances[_bid] -= _value;
         balances[offer] += _value;
         emit Transfer(_bid, offer, _value); //solhint-disable-line indent, no-unused-vars
         return true;
-    }
-
-    // Computes the sum of all stored data.
-    function sum() public view returns (uint s) {
-        for (
-            Iterator i = bids.iterateStart();
-            bids.iterateValid(i);
-            i = bids.iterateNext(i)
-        ) {
-            (, Bid memory bid) = bids.iterateGet(i);
-            s += bid.value;
-        }
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
