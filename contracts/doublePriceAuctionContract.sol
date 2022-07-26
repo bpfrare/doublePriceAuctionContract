@@ -48,8 +48,8 @@ contract DoublePriceAuctionContract {
     uint256 constant private MAX_UINT256 = 2**256 - 1;
     mapping (address => uint256) public balances;
     mapping (address => mapping (address => uint256)) public allowed;
-    itmap bids;
-    itmap offers;
+    itmap private bids;
+    itmap private offers;
     using IterableMapping for itmap;
     uint256 public totalSupply;
     /*
@@ -133,38 +133,46 @@ contract DoublePriceAuctionContract {
     }
 
     function findOffer(address _bid) public view returns (address offerAddr) {
+        // get the buyer
         Bid memory bid = bids.get(_bid);
+        // look for a seller
         for (
             Iterator i = offers.iterateStart();
             offers.iterateValid(i);
             i = offers.iterateNext(i)
         ) {
             (address _offerAddr, Bid memory _offer) = offers.iterateGet(i);
+            // verify the condicions to find the seller
             if (_offerAddr != _bid && bid.value == _offer.value && _offer.amount > 0) {
                 return _offerAddr;
             }
         }
     }
 
-    function processDA(address _bid) public returns (bool success) {
+    function processTransaction(address _bid) public returns (bool success) {
         uint256 _value;
 
+        // Check if the buyer has enought token
         Bid memory bid = bids.get(_bid);
         require(balances[_bid] >= bid.amount, "token balance is lower than the value requested");
         
+        // find a seller, if doesn't find throw an error
         address offer = findOffer(_bid);
-        Bid memory bidOffer = offers.get(offer);
         require(offer != address(0), "didn't find any match");
+        Bid memory bidOffer = offers.get(offer);
+        
+        // Check if the seller has enought energy to sell
         if (bidOffer.amount < bid.amount) {
             _value = bidOffer.amount;
         } else {
             _value = bid.amount;
         }
-        // decrementar as listas de oferta e procura
+        
+        // update the amount of energy
         bids.decAmount(_bid, _value);
         offers.decAmount(offer, _value);
 
-        //Transfer
+        //Transfer token from buyer to seller
         balances[_bid] -= _value;
         balances[offer] += _value;
         emit Transfer(_bid, offer, _value); //solhint-disable-line indent, no-unused-vars
