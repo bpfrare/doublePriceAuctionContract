@@ -70,7 +70,7 @@ contract('DoublePriceAuction', (accounts) => {
         await doublePriceAuctionInstance.placeOffer(50, {from: accounts[1]});
 
 
-        await doublePriceAuctionInstance.processDA(accounts[0]);
+        await doublePriceAuctionInstance.processTransaction(accounts[0]);
         let bc0 = await doublePriceAuctionInstance.balanceOf.call(accounts[0]);
         assert.equal(bc0.toNumber(), 990);
         let bc1 = await doublePriceAuctionInstance.balanceOf.call(accounts[1]);
