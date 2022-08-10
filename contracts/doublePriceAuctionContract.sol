@@ -70,7 +70,7 @@ contract DoublePriceAuctionContract {
         symbol = _tokenSymbol;                               // Set the symbol for display purposes
     }
 
-    function registerBid(uint256 _value, uint256 _sourceType) public returns (uint size) {
+    function registerBid(uint256 _value, uint8 _sourceType) public returns (uint size) {
         bids.insert(msg.sender, 0, _value, _sourceType);
         return bids.size;
     }
@@ -101,7 +101,7 @@ contract DoublePriceAuctionContract {
         }
     }
 
-    function registerOffer(uint256 _value, uint256 _sourceType) public returns (uint size) {
+    function registerOffer(uint256 _value, uint8 _sourceType) public returns (uint size) {
         offers.insert(msg.sender, 0, _value, _sourceType);
         return offers.size;
     }
@@ -133,22 +133,25 @@ contract DoublePriceAuctionContract {
     }
 
     function findOffer(address _bid) public view returns (address offerAddr) {
+        Iterator i = offers.iterateStart();
+        return findOffer(_bid, i);
+    }
+
+    function findOffer(address _bid, Iterator _i) internal view returns (address offerAddr) {
         // get the buyer
         Bid memory bid = bids.get(_bid);
         // look for a seller
-        for (
-            Iterator i = offers.iterateStart();
-            offers.iterateValid(i);
-            i = offers.iterateNext(i)
+        for (; offers.iterateValid(_i); _i = offers.iterateNext(_i)
         ) {
-            (address _offerAddr, Bid memory _offer) = offers.iterateGet(i);
+            (address _offerAddr, Bid memory _offer) = offers.iterateGet(_i);
             // verify the condicions to find the seller
-            if (_offerAddr != _bid && bid.value == _offer.value && _offer.amount > 0) {
+            if (_offerAddr != _bid && _offer.value == bid.value && _offer.amount > 0) {
                 return _offerAddr;
             }
         }
     }
 
+    // criterio de otimazação global
     function processTransaction(address _bid) public returns (bool success) {
         uint256 _value;
 
@@ -167,16 +170,40 @@ contract DoublePriceAuctionContract {
         } else {
             _value = bid.amount;
         }
-        
+        transferEnergy(_bid, offer, _value);
+
+        return true;
+    }
+
+    function transferEnergy(address _from, address _to, uint256 _value) private returns (bool success) {
         // update the amount of energy
-        bids.decAmount(_bid, _value);
-        offers.decAmount(offer, _value);
+        bids.decAmount(_from, _value);
+        offers.decAmount(_to, _value);
 
         //Transfer token from buyer to seller
-        balances[_bid] -= _value;
-        balances[offer] += _value;
-        emit Transfer(_bid, offer, _value); //solhint-disable-line indent, no-unused-vars
+        balances[_from] -= _value;
+        balances[_to] += _value;
+        emit Transfer(_from, _to, _value); //solhint-disable-line indent, no-unused-vars
         return true;
+
+    }
+
+    function trade() public {
+        for (
+            Iterator i = bids.iterateStart();
+            bids.iterateValid(i);
+            i = bids.iterateNext(i)
+        ) {
+            (address _bidderAddr, Bid memory bid) = offers.iterateGet(i);
+            // verify the condicions to find the seller
+            processTransaction(_bidderAddr);
+            // update values
+            bid = bids.get(_bidderAddr);
+            if (bid.amount == 0) {
+
+
+            }
+        }
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {

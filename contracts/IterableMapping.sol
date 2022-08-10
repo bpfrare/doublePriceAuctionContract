@@ -4,7 +4,7 @@ pragma solidity ^0.8.8;
 struct Bid {
     uint256 amount;
     uint256 value;
-    uint256 sourceType;
+    uint8 sourceType;
 }
 
 struct IndexValue { uint keyIndex; Bid value; }
@@ -19,7 +19,7 @@ struct itmap {
 type Iterator is uint;
 
 library IterableMapping {
-    function insert(itmap storage self, address _key, uint256 _amount, uint256 _value, uint256 _sourceType) internal returns (bool replaced) {
+    function insert(itmap storage self, address _key, uint256 _amount, uint256 _value, uint8 _sourceType) internal returns (bool replaced) {
         uint keyIndex = self.data[_key].keyIndex;
         self.data[_key].value = Bid(_amount, _value, _sourceType);
         if (keyIndex > 0)
@@ -40,7 +40,7 @@ library IterableMapping {
             return false;
         delete self.data[_key];
         self.keys[keyIndex - 1].deleted = true;
-        self.size --;
+        self.size--;
     }
 
     function addAmount(itmap storage self, address _key, uint256 amount) internal {
