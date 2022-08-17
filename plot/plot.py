@@ -1,20 +1,41 @@
+import argparse
 import pandas as pd
 import matplotlib.pyplot as plt
 
-plt.rcParams["figure.figsize"] = [7.50, 3.50]
-plt.rcParams["figure.autolayout"] = True
+my_parser = argparse.ArgumentParser(description='Plot chart from CSV')
 
-columns = ["Quantidade", "Tempo", "Gas"]
+my_parser.add_argument('Path',
+                       metavar='path',
+                       type=str,
+                       help='the path to csv')
 
-df = pd.read_csv('../registerBidders.csv', delimiter=';',  names=columns)
+my_parser.add_argument('Name',
+                       metavar='name',
+                       type=str,
+                       help='Plot name')
 
-print('Tempo (mean e std):', df['Tempo'].mean(), df['Tempo'].std())
-print('Gas (mean, std, custo):', df['Gas'].mean(), df['Gas'].std(), 'R$ ' + str(round(30 / 1000000000 * df['Gas'].mean() * 8676.81, 2)))
+dollar = 1877.95
+gas_price = 30
 
-ax = df.set_index('Quantidade').plot(secondary_y=['Gas'], mark_right=False, grid=True)
+def read_plot(path, name):
+    plt.rcParams["figure.figsize"] = [7.50, 3.50]
+    plt.rcParams["figure.autolayout"] = True
 
-ax.set_ylabel('Tempo (ms)')
-ax.right_ax.set_ylabel('Gas')
+    columns = ["Quantidade", "Tempo", "Gas"]
+
+    df = pd.read_csv(path, delimiter=';',  names=columns)
+
+    print('Tempo (mean e std):', df['Tempo'].mean(), df['Tempo'].std())
+    print('Gas (mean, std, custo):', df['Gas'].mean(), df['Gas'].std(), 'USD $ ' + str(round(gas_price / 1000000000 * df['Gas'].mean() * dollar , 2)))
+
+    ax = df.set_index('Quantidade').plot(secondary_y=['Gas'], mark_right=False, grid=True)
+
+    ax.set_ylabel('Tempo (ms)')
+    ax.right_ax.set_ylabel('Gas')
+
+    plt.savefig(name + '.png')
 
 
-plt.savefig('plot.png')
+if __name__ == '__main__':
+    args = my_parser.parse_args()
+    read_plot(args.Path, args.Name)
