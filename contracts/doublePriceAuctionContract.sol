@@ -1,57 +1,22 @@
 // https://eips.ethereum.org/EIPS/eip-20
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.5.0 <=0.8.15;
+pragma solidity >=0.5.0 <=0.8.16;
 
+import "./IERC20.sol";
+import "./IDoublePriceAuctionContract.sol";
 import "./IterableMapping.sol";
 
-interface DoublePriceAuctionContractInterface {
-
-    /// @param _owner The address from which the balance will be retrieved
-    /// @return balance the balance
-    function balanceOf(address _owner) external view returns (uint256 balance);
-
-    /// @notice send `_value` token to `_to` from `msg.sender`
-    /// @param _to The address of the recipient
-    /// @param _value The amount of token to be transferred
-    /// @return success Whether the transfer was successful or not
-    function transfer(address _to, uint256 _value)  external returns (bool success);
-
-    function registerBid(uint256 _value, uint256 _sourceType) external returns (uint256);
-
-    /// @notice send `_value` token to `_to` from `_from` on the condition it is approved by `_from`
-    /// @param _from The address of the sender
-    /// @param _to The address of the recipient
-    /// @param _value The amount of token to be transferred
-    /// @return success Whether the transfer was successful or not
-    function transferFrom(address _from, address _to, uint256 _value) external returns (bool success);
-
-    /// @notice `msg.sender` approves `_addr` to spend `_value` tokens
-    /// @param _spender The address of the account able to transfer the tokens
-    /// @param _value The amount of wei to be approved for transfer
-    /// @return success Whether the approval was successful or not
-    function approve(address _spender  , uint256 _value) external returns (bool success);
-
-    /// @param _owner The address of the account owning tokens
-    /// @param _spender The address of the account able to transfer the tokens
-    /// @return remaining Amount of remaining tokens allowed to spent
-    function allowance(address _owner, address _spender) external view returns (uint256 remaining);
-
-    event Transfer(address indexed _from, address indexed _to, uint256 _value);
-    event Approval(address indexed _owner, address indexed _spender, uint256 _value);
-}
-
-contract DoublePriceAuctionContract {
-
-    event Transfer(address indexed _from, address indexed _to, uint256 _value);
-    event Approval(address indexed _owner, address indexed _spender, uint256 _value);
+contract DoublePriceAuctionContract is IERC20, IDoublePriceAuctionContract   {
     
     uint256 constant private MAX_UINT256 = 2**256 - 1;
     mapping (address => uint256) public balances;
     mapping (address => mapping (address => uint256)) public allowed;
+    uint256 public totalSupply;
+    
     itmap private bids;
     itmap private offers;
     using IterableMapping for itmap;
-    uint256 public totalSupply;
+    
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
@@ -70,12 +35,12 @@ contract DoublePriceAuctionContract {
         symbol = _tokenSymbol;                               // Set the symbol for display purposes
     }
 
-    function registerBid(uint256 _value, uint8 _sourceType) public returns (uint size) {
+    function registerBid(uint256 _value, uint8 _sourceType) public override returns (uint size) {
         bids.insert(msg.sender, 0, _value, _sourceType);
         return bids.size;
     }
 
-    function placeBid(uint256 _amount) public {
+    function placeBid(uint256 _amount) public override {
         bids.addAmount(msg.sender, _amount);
     }
 
@@ -83,11 +48,11 @@ contract DoublePriceAuctionContract {
         return bids.size;
     }
 
-    function getBid() public view returns (Bid memory) {
+    function getBid() public override view returns (Bid memory) {
         return bids.get(msg.sender);
     }
 
-    function getBids() public view returns (Bid[] memory value) {
+    function getBids() public override view returns (Bid[] memory value) {
         value = new Bid[](bids.size);
         uint j = 0;
         for (
@@ -101,16 +66,16 @@ contract DoublePriceAuctionContract {
         }
     }
 
-    function registerOffer(uint256 _value, uint8 _sourceType) public returns (uint size) {
+    function registerOffer(uint256 _value, uint8 _sourceType) public override returns (uint size) {
         offers.insert(msg.sender, 0, _value, _sourceType);
         return offers.size;
     }
 
-    function placeOffer(uint256 _amount) public {
+    function placeOffer(uint256 _amount) public override {
         offers.addAmount(msg.sender, _amount);
     }
 
-    function getOffers() public view returns (Bid[] memory value) {
+    function getOffers() public override view returns (Bid[] memory value) {
         value = new Bid[](offers.size);
         uint j = 0;
         for (
@@ -128,11 +93,11 @@ contract DoublePriceAuctionContract {
         return offers.size;
     }
 
-    function getOffer() public view returns (Bid memory) {
+    function getOffer() public override view returns (Bid memory) {
         return offers.get(msg.sender);
     }
 
-    function findOffer(address _bid) public view returns (address offerAddr) {
+    function findOffer(address _bid) public override view returns (address offerAddr) {
         Iterator i = offers.iterateStart();
         return findOffer(_bid, i);
     }
@@ -151,7 +116,6 @@ contract DoublePriceAuctionContract {
         }
     }
 
-    // criterio de otimazação global
     function processTransaction(address _bid) public returns (bool success) {
         uint256 _value;
 
@@ -206,7 +170,7 @@ contract DoublePriceAuctionContract {
         }
     }
 
-    function transfer(address _to, uint256 _value) public returns (bool success) {
+    function transfer(address _to, uint256 _value) public override  returns (bool success) {
         require(balances[msg.sender] >= _value, "token balance is lower than the value requested");
         balances[msg.sender] -= _value;
         balances[_to] += _value;
@@ -214,7 +178,7 @@ contract DoublePriceAuctionContract {
         return true;
     }
 
-    function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
+    function transferFrom(address _from, address _to, uint256 _value) public override returns (bool success) {
         uint256 allowance = allowed[_from][msg.sender];
         require(balances[_from] >= _value && allowance >= _value, "token balance or allowance is lower than amount requested");
         balances[_to] += _value;
@@ -226,17 +190,17 @@ contract DoublePriceAuctionContract {
         return true;
     }
 
-    function balanceOf(address _owner) public view returns (uint256 balance) {
+    function balanceOf(address _owner) public override view returns (uint256 balance) {
         return balances[_owner];
     }
 
-    function approve(address _spender, uint256 _value) public returns (bool success) {
+    function approve(address _spender, uint256 _value) public override returns (bool success) {
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value); //solhint-disable-line indent, no-unused-vars
         return true;
     }
 
-    function allowance(address _owner, address _spender) public view returns (uint256 remaining) {
+    function allowance(address _owner, address _spender) public override view returns (uint256 remaining) {
         return allowed[_owner][_spender];
     }
 }
