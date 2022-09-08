@@ -31,13 +31,6 @@ contract('DoublePriceAuction', (accounts) => {
 
     });
 
-    // it('should register 100 Bidder', async () => {
-    //     const doublePriceAuctionInstance = await DoublePriceAuction.deployed();
-    //     for(let i=3;i<103;i++) {
-    //         await doublePriceAuctionInstance.registerBid(i,i*10);
-    //     }
-    // });
-
     it('should register an Offer', async () => {
         const doublePriceAuctionInstance = await DoublePriceAuction.deployed();
         await doublePriceAuctionInstance.registerOffer(10,100);
