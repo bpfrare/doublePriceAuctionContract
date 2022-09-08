@@ -97,7 +97,7 @@ contract DoublePriceAuctionContract is IERC20, IDoublePriceAuctionContract   {
         return offers.get(msg.sender);
     }
 
-    function findOffer(address _bid) public override view returns (address offerAddr) {
+    function findOffer(address _bid) public override returns (address offerAddr) {
         Iterator i = offers.iterateStart();
         return findOffer(_bid, i);
     }

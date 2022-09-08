@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-3.0
+// SPDX-License-Identifier: MIT
 pragma solidity >=0.5.0 <=0.8.16;
 
 import "./IterableMapping.sol";
@@ -21,6 +21,6 @@ interface IDoublePriceAuctionContract {
 
     function getOffers() external view returns (Bid[] memory value);
 
-    function findOffer(address _bid) external view returns (address offerAddr);
+    function findOffer(address _bid) external returns (address offerAddr);
 
 }
