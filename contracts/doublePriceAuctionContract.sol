@@ -1,6 +1,6 @@
 // https://eips.ethereum.org/EIPS/eip-20
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.5.0 <=0.8.16;
+pragma solidity >=0.5.0 <0.9;
 
 import "./IERC20.sol";
 import "./IDoublePriceAuctionContract.sol";
@@ -99,10 +99,10 @@ contract DoublePriceAuctionContract is IERC20, IDoublePriceAuctionContract   {
 
     function findOffer(address _bid) public override returns (address offerAddr) {
         Iterator i = offers.iterateStart();
-        return findOffer(_bid, i);
+        (offerAddr, i) = findOffer(_bid, i);
     }
 
-    function findOffer(address _bid, Iterator _i) internal view returns (address offerAddr) {
+    function findOffer(address _bid, Iterator _i) internal view returns (address offerAddr, Iterator inter) {
         // get the buyer
         Bid memory bid = bids.get(_bid);
         // look for a seller
@@ -111,31 +111,38 @@ contract DoublePriceAuctionContract is IERC20, IDoublePriceAuctionContract   {
             (address _offerAddr, Bid memory _offer) = offers.iterateGet(_i);
             // verify the condicions to find the seller
             if (_offerAddr != _bid && _offer.value == bid.value && _offer.amount > 0) {
-                return _offerAddr;
+                return (_offerAddr, _i);
             }
         }
     }
 
     function processTransaction(address _bid) public returns (bool success) {
-        uint256 _value;
+        
 
         // Check if the buyer has enought token
         Bid memory bid = bids.get(_bid);
         require(balances[_bid] >= bid.amount, "token balance is lower than the value requested");
+
+        // initial value for exchange
+        uint256 _value = bid.amount;
         
         // find a seller, if doesn't find throw an error
-        address offer = findOffer(_bid);
-        require(offer != address(0), "didn't find any match");
-        Bid memory bidOffer = offers.get(offer);
-        
-        // Check if the seller has enought energy to sell
-        if (bidOffer.amount < bid.amount) {
-            _value = bidOffer.amount;
-        } else {
-            _value = bid.amount;
+        Iterator i = offers.iterateStart();
+        address offer;
+        while(_value > 0 && offers.iterateValid(i)) {
+            (offer, i) = findOffer(_bid, i);
+            require(offer != address(0), "didn't find any match");
+            Bid memory bidOffer = offers.get(offer);
+            
+            // Check if the seller has enought energy to sell
+            if (bidOffer.amount < bid.amount) {
+                transferEnergy(_bid, offer, bid.amount);
+                _value -= bidOffer.amount;
+            } else {
+                transferEnergy(_bid, offer, bid.amount);
+                _value = 0;
+            }
         }
-        transferEnergy(_bid, offer, _value);
-
         return true;
     }
 
