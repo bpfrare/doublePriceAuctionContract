@@ -114,7 +114,7 @@ contract('DoublePriceAuction', (accounts) => {
         await doublePriceAuctionInstance.placeOffer(30, {from: accounts[2]});
 
         // call
-        await debug(doublePriceAuctionInstance.processTransaction(accounts[0]));
+        await doublePriceAuctionInstance.processTransaction(accounts[0]);
         
         // Check
         let bc0 = await doublePriceAuctionInstance.balanceOf.call(accounts[0]);
