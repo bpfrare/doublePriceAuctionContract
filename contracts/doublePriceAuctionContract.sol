@@ -129,19 +129,25 @@ contract DoublePriceAuctionContract is IERC20, IDoublePriceAuctionContract   {
         // find a seller, if doesn't find throw an error
         Iterator i = offers.iterateStart();
         address offer;
+        Bid memory bidOffer;
         while(_value > 0 && offers.iterateValid(i)) {
             (offer, i) = findOffer(_bid, i);
-            require(offer != address(0), "didn't find any match");
-            Bid memory bidOffer = offers.get(offer);
+            // didn't find any match
+            if (offer == address(0)) {
+                return false;
+            }
+            bidOffer = offers.get(offer);
             
             // Check if the seller has enought energy to sell
-            if (bidOffer.amount < bid.amount) {
-                transferEnergy(_bid, offer, bid.amount);
+            if (bidOffer.amount < _value) {
+                transferEnergy(_bid, offer, bidOffer.amount);
                 _value -= bidOffer.amount;
             } else {
-                transferEnergy(_bid, offer, bid.amount);
+                transferEnergy(_bid, offer, _value);
                 _value = 0;
             }
+            // jump to next
+            i = offers.iterateNext(i);
         }
         return true;
     }
@@ -168,12 +174,6 @@ contract DoublePriceAuctionContract is IERC20, IDoublePriceAuctionContract   {
             (address _bidderAddr, Bid memory bid) = offers.iterateGet(i);
             // verify the condicions to find the seller
             processTransaction(_bidderAddr);
-            // update values
-            bid = bids.get(_bidderAddr);
-            if (bid.amount == 0) {
-
-
-            }
         }
     }
 

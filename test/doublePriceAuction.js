@@ -75,4 +75,62 @@ contract('DoublePriceAuction', (accounts) => {
         assert.equal(offer.amount, 40);
     });
 
+    it("should close a partial deal ", async () => {
+        const doublePriceAuctionInstance = await DoublePriceAuction.deployed();
+        await doublePriceAuctionInstance.registerBid(1,2);
+        await doublePriceAuctionInstance.placeBid(50);
+        
+        // First offer
+        await doublePriceAuctionInstance.registerOffer(1,2, {from: accounts[1]});
+        await doublePriceAuctionInstance.placeOffer(30, {from: accounts[1]});
+
+        // call
+        await doublePriceAuctionInstance.processTransaction(accounts[0]);
+
+        // Check
+        let bc0 = await doublePriceAuctionInstance.balanceOf.call(accounts[0]);
+        assert.equal(bc0.toNumber(), 960);
+        let bc1 = await doublePriceAuctionInstance.balanceOf.call(accounts[1]);
+        assert.equal(bc1.toNumber(), 40);
+
+        let bid = await doublePriceAuctionInstance.getBid.call();
+        let offer1 = await doublePriceAuctionInstance.getOffer.call({from: accounts[1]});
+        assert.equal(bid.amount, 20);
+        assert.equal(offer1.amount, 0);
+    
+    });
+
+    it("should close a deal with two offer", async () => {
+        const doublePriceAuctionInstance = await DoublePriceAuction.deployed();
+        await doublePriceAuctionInstance.registerBid(1,2);
+        await doublePriceAuctionInstance.placeBid(50);
+        
+        // First offer
+        await doublePriceAuctionInstance.registerOffer(1,2, {from: accounts[1]});
+        await doublePriceAuctionInstance.placeOffer(20, {from: accounts[1]});
+        
+        // Second offer
+        await doublePriceAuctionInstance.registerOffer(1,2, {from: accounts[2]});
+        await doublePriceAuctionInstance.placeOffer(30, {from: accounts[2]});
+
+        // call
+        await debug(doublePriceAuctionInstance.processTransaction(accounts[0]));
+        
+        // Check
+        let bc0 = await doublePriceAuctionInstance.balanceOf.call(accounts[0]);
+        assert.equal(bc0.toNumber(), 910);
+        let bc1 = await doublePriceAuctionInstance.balanceOf.call(accounts[1]);
+        assert.equal(bc1.toNumber(), 60);
+        let bc2 = await doublePriceAuctionInstance.balanceOf.call(accounts[2]);
+        assert.equal(bc2.toNumber(), 30);
+
+        let bid = await doublePriceAuctionInstance.getBid.call();
+        let offer1 = await doublePriceAuctionInstance.getOffer.call({from: accounts[1]});
+        let offer2 = await doublePriceAuctionInstance.getOffer.call({from: accounts[2]});
+        assert.equal(bid.amount, 0);
+        assert.equal(offer1.amount, 0);
+        assert.equal(offer2.amount, 0);
+    
+    });
+
 });
