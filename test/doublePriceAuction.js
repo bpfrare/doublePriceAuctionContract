@@ -46,7 +46,7 @@ contract('DoublePriceAuction', (accounts) => {
         assert.equal(auxAddr, 0x0);
     });
 
-    it("shouldn't find an Offer", async () => {
+    it("shouldn't find an Offer with diferent sourceType", async () => {
         const doublePriceAuctionInstance = await DoublePriceAuction.deployed();
         await doublePriceAuctionInstance.registerBid(1,2);
         await doublePriceAuctionInstance.registerOffer(10,100);
@@ -132,5 +132,37 @@ contract('DoublePriceAuction', (accounts) => {
         assert.equal(offer2.amount, 0);
     
     });
+
+    it("should trade with two bidder and one Offer", async () => {
+        const doublePriceAuctionInstance = await DoublePriceAuction.deployed();
+        
+        // bidder 1
+        await doublePriceAuctionInstance.registerBid(1,2);
+        await doublePriceAuctionInstance.placeBid(50);
+
+        // bidder 2
+        await doublePriceAuctionInstance.registerBid(1,2, {from: accounts[1]});
+        await doublePriceAuctionInstance.placeBid(30, {from: accounts[1]});
+
+        doublePriceAuctionInstance.transfer(accounts[1], 30);
+
+        // Offer
+        await doublePriceAuctionInstance.registerOffer(1,2, {from: accounts[2]});
+        await doublePriceAuctionInstance.placeOffer(80, {from: accounts[2]});
+
+        // call
+        // await doublePriceAuctionInstance.processTransaction(accounts[1]);
+        await doublePriceAuctionInstance.trade();
+
+        let bid1 = await doublePriceAuctionInstance.getBid.call();
+        let bid2 = await doublePriceAuctionInstance.getBid.call({from: accounts[1]});
+        let offer1 = await doublePriceAuctionInstance.getOffer.call({from: accounts[2]});
+
+        assert.equal(bid1.amount, 0);
+        assert.equal(bid2.amount, 0);
+        assert.equal(offer1.amount, 0);
+
+    });
+
 
 });

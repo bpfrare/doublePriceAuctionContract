@@ -171,7 +171,7 @@ contract DoublePriceAuctionContract is IERC20, IDoublePriceAuctionContract   {
             bids.iterateValid(i);
             i = bids.iterateNext(i)
         ) {
-            (address _bidderAddr, Bid memory bid) = offers.iterateGet(i);
+            (address _bidderAddr, Bid memory bid) = bids.iterateGet(i);
             // verify the condicions to find the seller
             processTransaction(_bidderAddr);
         }
