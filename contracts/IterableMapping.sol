@@ -89,21 +89,21 @@ library IterableMapping {
     function sort(itmap storage self) public returns(Bid[] memory value) {
        value = new Bid[](self.size);
        KeyFlag[] memory aux = self.keys;
-       quickSort(self, aux, int(0), int(self.size));
+       quickSort(self, aux, int(0), int(self.size - 1));
        for (uint i=0; i < self.size;i++) {
             value[i] = self.data[aux[i].key].value;
         }
        return value;
     }
 
-    function quickSort(itmap storage self, KeyFlag[] memory arr, int left, int right) internal{
+    function quickSort(itmap storage self, KeyFlag[] memory arr, int left, int right) internal {
         int i = left;
         int j = right;
         if(i==j) return;
-        uint pivot = self.data[arr[uint(left + (right - left) / 2)].key].value.value;
+        Bid memory pivot = self.data[arr[uint(left + (right - left) / 2)].key].value;
         while (i <= j) {
-            while (self.data[arr[uint(i)].key].value.value < pivot) i++;
-            while (pivot < self.data[arr[uint(j)].key].value.value) j--;
+            while (self.data[arr[uint(i)].key].value.value < pivot.value) i++;
+            while (pivot.value < self.data[arr[uint(j)].key].value.value) j--;
             if (i <= j) {
                 (arr[uint(i)], arr[uint(j)]) = (arr[uint(j)], arr[uint(i)]);
                 i++;
