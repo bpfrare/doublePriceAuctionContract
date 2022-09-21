@@ -164,5 +164,44 @@ contract('DoublePriceAuction', (accounts) => {
 
     });
 
+    it("should sort asc", async () => {
+        const doublePriceAuctionInstance = await DoublePriceAuction.deployed();
+
+        // bidder 1
+        await doublePriceAuctionInstance.registerBid(15,2);
+
+        // bidder 2
+        await doublePriceAuctionInstance.registerBid(20,2, {from: accounts[1]});
+
+        // bidder 3
+        await doublePriceAuctionInstance.registerBid(10,2, {from: accounts[2]});
+
+        let bids = await doublePriceAuctionInstance.getSortedBids.call();
+        
+        assert.equal(bids[0].value, 20);
+        assert.equal(bids[1].value, 15);
+        assert.equal(bids[2].value, 10);
+        
+    });
+
+    it("should sort desc", async () => {
+        const doublePriceAuctionInstance = await DoublePriceAuction.deployed();
+
+        // bidder 1
+        await doublePriceAuctionInstance.registerOffer(30,2);
+
+        // bidder 2
+        await doublePriceAuctionInstance.registerOffer(20,2, {from: accounts[1]});
+
+        // bidder 3
+        await doublePriceAuctionInstance.registerOffer(25,2, {from: accounts[2]});
+
+        let offers = await doublePriceAuctionInstance.getSortedOffer.call();
+
+        assert.equal(offers[0].value, 20);
+        assert.equal(offers[1].value, 25);
+        assert.equal(offers[2].value, 30);
+
+    });
 
 });

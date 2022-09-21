@@ -66,6 +66,14 @@ contract DoublePriceAuctionContract is IERC20, IDoublePriceAuctionContract   {
         }
     }
 
+    function getSortedBids() public returns (Bid[] memory value) {
+        return bids.sortDesc();
+    }
+
+    function getSortedOffer() public returns (Bid[] memory value) {
+        return offers.sortAsc();
+    }
+
     function registerOffer(uint256 _value, uint8 _sourceType) public override returns (uint size) {
         offers.insert(msg.sender, 0, _value, _sourceType);
         return offers.size;
