@@ -18,10 +18,11 @@
  *
  */
 
-// const HDWalletProvider = require('@truffle/hdwallet-provider');
-//
-// const fs = require('fs');
-// const mnemonic = fs.readFileSync(".secret").toString().trim();
+const HDWalletProvider = require('@truffle/hdwallet-provider');
+
+const fs = require('fs');
+const mnemonic = fs.readFileSync(".secret").toString().trim();
+const key = fs.readFileSync(".secret_key").toString().trim();
 
 module.exports = {
   /**
@@ -46,6 +47,14 @@ module.exports = {
      port: 7545,            // Standard Ethereum port (default: none)
      network_id: "*",       // Any network (default: none)
     },
+    develop: {
+      host: "127.0.0.1",
+      port: 9545,
+      network_id: 20,
+      accounts: 5,
+      defaultEtherBalance: 500,
+      blockTime: 3
+    },
     //
     // An additional network, but with some advanced options…
     // advanced: {
@@ -59,14 +68,14 @@ module.exports = {
     //
     // Useful for deploying to a public network.
     // Note: It's important to wrap the provider as a function to ensure truffle uses a new provider every time.
-    // ropsten: {
-    //   provider: () => new HDWalletProvider(mnemonic, `https://ropsten.infura.io/v3/YOUR-PROJECT-ID`),
-    //   network_id: 3,       // Ropsten's id
-    //   gas: 5500000,        // Ropsten has a lower block limit than mainnet
-    //   confirmations: 2,    // # of confirmations to wait between deployments. (default: 0)
-    //   timeoutBlocks: 200,  // # of blocks before a deployment times out  (minimum/default: 50)
-    //   skipDryRun: true     // Skip dry run before migrations? (default: false for public nets )
-    // },
+    gorli: {
+      provider: () => new HDWalletProvider(mnemonic, `https://goerli.infura.io/v3/${key}`),
+      network_id: 5,       // goerli's id
+      gas: 5500000,        // goerli has a lower block limit than mainnet
+      confirmations: 2,    // # of confirmations to wait between deployments. (default: 0)
+      timeoutBlocks: 200,  // # of blocks before a deployment times out  (minimum/default: 50)
+      skipDryRun: true     // Skip dry run before migrations? (default: false for public nets )
+    },
     //
     // Useful for private networks
     // private: {
@@ -79,6 +88,7 @@ module.exports = {
   // Set default mocha options here, use special reporters, etc.
   mocha: {
     // timeout: 100000
+    enableTimeouts: false,
     reporter: 'eth-gas-reporter',
     reporterOptions: {
       excludeContracts: ['Migrations']
