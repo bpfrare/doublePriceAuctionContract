@@ -180,6 +180,37 @@ contract DoublePriceAuctionContract is IERC20, IDoublePriceAuctionContract   {
         }
     }
 
+    function mcp() public override returns(int value) {
+        Bid[] memory _bids = getSortedBids();
+        Bid[] memory _offers = getSortedOffer();
+
+        int i = 0;
+        int j = 0;
+        int q_b = _bids[0].amount;
+        int q_o = _offer[0].amount;
+        while(i < bids.size || j < offers.size ) {
+            if (_bids[i].value == _offers[j].value) {
+                return _bids[i].value;
+            } else if (_bids[i].value < _offers[j].value) {
+                // Inversion
+                // Return avg
+                return (_bids[i].value + _offers[j].value)/2;
+            } else {
+                // go to next
+                q_b--;
+                if (q_b == 0) {
+                    i++;
+                    q_b = _bids[i].amount;
+                }
+                q_o--;
+                if (q_o == 0) {
+                    j++;
+                    q_o = _offer[j].amount;
+                }
+            }
+        }
+    }
+
     function transfer(address _to, uint256 _value) public override  returns (bool success) {
         require(balances[msg.sender] >= _value, "token balance is lower than the value requested");
         balances[msg.sender] -= _value;

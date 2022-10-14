@@ -23,4 +23,6 @@ interface IDoublePriceAuctionContract {
 
     function findOffer(address _bid) external returns (address offerAddr);
 
+    function mcp() external returns (int value);
+
 }
