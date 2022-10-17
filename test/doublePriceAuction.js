@@ -187,13 +187,13 @@ contract('DoublePriceAuction', (accounts) => {
     it("should sort desc", async () => {
         const doublePriceAuctionInstance = await DoublePriceAuction.deployed();
 
-        // bidder 1
+        // offer 1
         await doublePriceAuctionInstance.registerOffer(30,2);
 
-        // bidder 2
+        // offer 2
         await doublePriceAuctionInstance.registerOffer(20,2, {from: accounts[1]});
 
-        // bidder 3
+        // offer 3
         await doublePriceAuctionInstance.registerOffer(25,2, {from: accounts[2]});
 
         let offers = await doublePriceAuctionInstance.getSortedOffer.call();
@@ -204,4 +204,37 @@ contract('DoublePriceAuction', (accounts) => {
 
     });
 
+    it("should calc MCP", async () => {
+        /**
+            Value | Bid  | Offer
+            100   | 1000 |  500
+            125   | 910  |  650
+            150   | 830  |  770
+            175   | 760  |  870
+            200   | 700  |  950
+            225   | 650  | 1010
+
+            MCP = 157
+
+         */
+        const doublePriceAuctionInstance = await DoublePriceAuction.deployed();
+        let values = [100, 125, 150, 175, 200, 225];
+        let bids = [1000, 910, 830, 760, 700, 650];
+        let offer = [500, 650, 770, 870, 950, 1010];
+        
+        for(let i = 0; i < values.length; i++) {
+            // register bids
+            await doublePriceAuctionInstance.registerBid(values[i], 2, {from: accounts[i]});
+            await doublePriceAuctionInstance.placeBid(bids[i], {from: accounts[i]});
+
+            // register offers
+            await doublePriceAuctionInstance.registerOffer(values[i],2, {from: accounts[values.length + i]});
+            await doublePriceAuctionInstance.placeOffer(offer[i], {from: accounts[values.length + i]});
+
+        }
+
+        let mcp = await doublePriceAuctionInstance.mcp.call()
+        console.log(mcp);
+        assert.equal(mcp, 157);
+    });
 });

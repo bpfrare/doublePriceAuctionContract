@@ -180,14 +180,14 @@ contract DoublePriceAuctionContract is IERC20, IDoublePriceAuctionContract   {
         }
     }
 
-    function mcp() public override returns(int value) {
+    function mcp() public override returns(uint256 value) {
         Bid[] memory _bids = getSortedBids();
         Bid[] memory _offers = getSortedOffer();
 
-        int i = 0;
-        int j = 0;
-        int q_b = _bids[0].amount;
-        int q_o = _offer[0].amount;
+        uint256 i = 0;
+        uint256 j = 0;
+        uint256 q_b = _bids[0].amount;
+        uint256 q_o = _offers[0].amount;
         while(i < bids.size || j < offers.size ) {
             if (_bids[i].value == _offers[j].value) {
                 return _bids[i].value;
@@ -205,7 +205,7 @@ contract DoublePriceAuctionContract is IERC20, IDoublePriceAuctionContract   {
                 q_o--;
                 if (q_o == 0) {
                     j++;
-                    q_o = _offer[j].amount;
+                    q_o = _offers[j].amount;
                 }
             }
         }
