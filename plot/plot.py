@@ -14,10 +14,16 @@ my_parser.add_argument('Name',
                        type=str,
                        help='Plot name')
 
+my_parser.add_argument('Xlabel',
+                       metavar='xlabel',
+                       type=str,
+                       help='X Label name',
+                       default='Quantidade')
+
 dollar = 1877.95
 gas_price = 30
 
-def read_plot(path, name):
+def read_plot(path, name, xlabel):
     plt.rcParams["figure.figsize"] = [7.50, 3.50]
     plt.rcParams["figure.autolayout"] = True
 
@@ -31,6 +37,7 @@ def read_plot(path, name):
     ax = df.set_index('Quantidade').plot(secondary_y=['Gas'], mark_right=False, grid=True)
 
     ax.set_ylabel('Tempo (ms)')
+    ax.set_xlabel(xlabel)
     ax.right_ax.set_ylabel('Gas')
 
     plt.savefig(name + '.png')
@@ -38,4 +45,4 @@ def read_plot(path, name):
 
 if __name__ == '__main__':
     args = my_parser.parse_args()
-    read_plot(args.Path, args.Name)
+    read_plot(args.Path, args.Name, args.Xlabel)
