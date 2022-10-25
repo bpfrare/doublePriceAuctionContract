@@ -4,7 +4,7 @@ const fs = require('fs');
 
 contract('DoublePriceAuction', (accounts) => {
   
-  for(let i=0;i<30;i++) {
+  for(let i=0;i<23;i++) {
     it(`should add ${i} bidder and ${i} Offer`, async () => {
       const doublePriceAuctionInstance = await DoublePriceAuction.deployed();
       await doublePriceAuctionInstance.registerBid(100, 59, {from: accounts[i]});
@@ -12,7 +12,7 @@ contract('DoublePriceAuction', (accounts) => {
       await doublePriceAuctionInstance.transfer(accounts[i], 10);
       await doublePriceAuctionInstance.registerOffer(i+1, 1, {from: accounts[i]});
     });
-    if (i >= 25) {
+    // if (i >= 25) {
       it(`should run trade for ${i} bidder and ${i} Offer`, async () => {
         let aux = ''
         await new Promise(r => setTimeout(r, 1000*i));
@@ -29,6 +29,6 @@ contract('DoublePriceAuction', (accounts) => {
         });
 
       });
-    }
+    // }
   }
 });
