@@ -33,8 +33,6 @@ def read_plot(path, name, xlabel):
     ax.set_ylabel('Preço (USD$)')
     ax.set_xlabel(xlabel)
 
-    plt.savefig('teste' + '.png')
-
     plt.savefig(name + '.png')
 
 

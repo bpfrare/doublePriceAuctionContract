@@ -1,3 +1,4 @@
+from cProfile import label
 from dataclasses import dataclass, field
 import matplotlib.pyplot as plt
 
@@ -23,9 +24,18 @@ def plot(bids, offers):
     y_b = list(map(lambda x: x.value, bids))
     x_o = list(map(lambda x: x.amount, offers))
     y_o = list(map(lambda x: x.value, offers))
-    plt.plot(x_b, y_b)
-    plt.plot(x_o, y_o)
+    plt.step(x_b, y_b, 'o-', where='post', label='Compradores')
+    plt.step(x_o, y_o, 'o-', where='post', label='Vendedores')
+    plt.xlabel('Quantidade')
+    plt.ylabel('Preço')
+    plt.grid()
+    plt.legend()
+    plt.annotate('MCP', xy=(830, 150), xytext=(830, 110),
+            arrowprops=dict(facecolor='black', shrink=0.05),
+            )
+    plt.savefig("mcp.png")
     plt.show()
+
 
 def mcp(bids, offers):
     bids.sort(reverse=True)
@@ -37,23 +47,28 @@ def mcp(bids, offers):
     j = 0
     q_b = bids[0].amount
     q_o = offers[0].amount
+    # is not the index, is the amount
     while(i < len(bids) or j < len(offers)):
+        # print(bids[i].value, offers[j].value)
         if (bids[i].value == offers[j].value):
+            print(i, j)
+            print("aquii")
             return bids[i].value
         elif (bids[i].value < offers[j].value):
-            #  Inversion
+            # Inversion
             # Return avg
             return (bids[i].value + offers[j].value)/2
-        else:
-            #  go to next
-            q_b -= 1
-            if (q_b == 0):
-                i += 1
-                q_b = bids[i].amount
-            q_o -= 1
-            if (q_o == 0):
-                j += 1
-                q_o = offers[j].amount
+        
+        #  go next
+        q_b -= 1
+        if (q_b == 0):
+            i += 1
+            q_b = bids[i].amount
+        q_o -= 1
+
+        if (q_o == 0):
+            j += 1
+            q_o = offers[j].amount
 
 
 
