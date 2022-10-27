@@ -1,4 +1,3 @@
-from cProfile import label
 from dataclasses import dataclass, field
 import matplotlib.pyplot as plt
 
@@ -36,8 +35,39 @@ def plot(bids, offers):
     plt.savefig("mcp.png")
     plt.show()
 
+def plot2(bids, offers):
+    plt.step(bids, 'o-', where='post', label='Compradores')
+    plt.step(offers, 'o-', where='post', label='Vendedores')
+    plt.xlabel('Quantidade')
+    plt.ylabel('Preço')
+    plt.grid()
+    plt.legend()
+    # plt.show()
+    plt.savefig("mcp2.png")
 
-def mcp(bids, offers):
+def interpolation(data: list[Bid]) -> list[int]:
+    aux = []
+    for d in data:
+        for _ in range(d.amount):
+            aux.append(d.value)
+    return aux
+
+def mcp2(bids: list[Bid], offers: list[Bid]) -> int:
+    bids.sort(reverse=True)
+    offers.sort()
+    bids = interpolation(bids)
+    offers = interpolation(offers)
+    plot2(bids, offers)
+    i = 0
+    while(i < len(bids) or i < len(offers)):
+        if bids[i] == offers[i]:
+            return bids[i]
+        elif bids[i] < offers[i]:
+            return (bids[i] + offers[i].value)/2
+        i += 1
+
+
+def mcp(bids: list[Bid], offers: list[Bid]) -> int:
     bids.sort(reverse=True)
     offers.sort()
     # plot(bids, offers)
@@ -48,11 +78,13 @@ def mcp(bids, offers):
     q_b = bids[0].amount
     q_o = offers[0].amount
     # is not the index, is the amount
+    # Increse quantity
     while(i < len(bids) or j < len(offers)):
         # print(bids[i].value, offers[j].value)
         if (bids[i].value == offers[j].value):
             print(i, j)
             print("aquii")
+            print(offers[j].value)
             return bids[i].value
         elif (bids[i].value < offers[j].value):
             # Inversion
