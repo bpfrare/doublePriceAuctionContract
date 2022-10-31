@@ -235,6 +235,6 @@ contract('DoublePriceAuction', (accounts) => {
 
         let mcp = await doublePriceAuctionInstance.mcp.call()
         console.log(mcp);
-        assert.equal(mcp, 157);
+        assert.equal(mcp, 150);
     });
 });
