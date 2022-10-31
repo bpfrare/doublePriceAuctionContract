@@ -32,7 +32,27 @@ def plot(bids, offers):
     plt.annotate('MCP', xy=(830, 150), xytext=(830, 110),
             arrowprops=dict(facecolor='black', shrink=0.05),
             )
-    plt.savefig("mcp.png")
+    plt.savefig("mcpStep.png")
+
+    plt.show()
+
+def plotLine(bids, offers):
+    plt.rcParams["figure.figsize"] = [7.50, 3.50]
+    plt.rcParams["figure.autolayout"] = True
+    x_b = list(map(lambda x: x.amount, bids))
+    y_b = list(map(lambda x: x.value, bids))
+    x_o = list(map(lambda x: x.amount, offers))
+    y_o = list(map(lambda x: x.value, offers))
+    plt.plot(x_b, y_b, 'o-', label='Compradores')
+    plt.plot(x_o, y_o, 'o-', label='Vendedores')
+    plt.xlabel('Quantidade')
+    plt.ylabel('Preço')
+    plt.grid()
+    plt.legend()
+    plt.annotate('MCP', xy=(805, 158), xytext=(805, 110),
+            arrowprops=dict(facecolor='black', shrink=0.05),
+            )
+    plt.savefig("mcpLine.png")
     plt.show()
 
 def plot2(bids, offers):
@@ -57,7 +77,7 @@ def mcp2(bids: list[Bid], offers: list[Bid]) -> int:
     offers.sort()
     bids = interpolation(bids)
     offers = interpolation(offers)
-    plot2(bids, offers)
+    # plot2(bids, offers)
     i = 0
     while(i < len(bids) or i < len(offers)):
         if bids[i] == offers[i]:
@@ -67,12 +87,29 @@ def mcp2(bids: list[Bid], offers: list[Bid]) -> int:
         i += 1
 
 
+def mcp3(bids: list[Bid], offers: list[Bid]) -> int:
+    bids.sort(reverse=True)
+    offers.sort()
+    i = 0
+    j = 0
+    while(i < len(bids) or j < len(offers)):
+        if bids[i].value == offers[j].value:
+            return bids[i].value
+        elif bids[i].value < offers[j].value:
+            return (bids[i].value + offers[j].value)/2
+
+        # Go next
+        if bids[i].amount < offers[j].amount:
+            i += 1
+        else:
+            j += 1
+
+
 def mcp(bids: list[Bid], offers: list[Bid]) -> int:
     bids.sort(reverse=True)
     offers.sort()
     # plot(bids, offers)
-    print(bids)
-    print(offers)
+    # plotLine(bids, offers)
     i = 0
     j = 0
     q_b = bids[0].amount
@@ -82,9 +119,6 @@ def mcp(bids: list[Bid], offers: list[Bid]) -> int:
     while(i < len(bids) or j < len(offers)):
         # print(bids[i].value, offers[j].value)
         if (bids[i].value == offers[j].value):
-            print(i, j)
-            print("aquii")
-            print(offers[j].value)
             return bids[i].value
         elif (bids[i].value < offers[j].value):
             # Inversion
