@@ -1,5 +1,5 @@
 import unittest
-from mcp import Bid, mcp, mcp2, interpolation
+from mcp import Bid, mcp, mcp2, mcp3, interpolation
 
 
 
@@ -25,7 +25,7 @@ class TestMCP(unittest.TestCase):
 
     def test_mcp(self):
         value = mcp(self.bids, self.offers)
-        self.assertEqual(value, 157)
+        self.assertEqual(value, 150)
 
     def test_interpolation(self):
         aux = interpolation(self.bids)
@@ -34,7 +34,11 @@ class TestMCP(unittest.TestCase):
 
     def test_mcp2(self):
         value = mcp2(self.bids, self.offers)
-        self.assertEqual(value, 157)
+        self.assertEqual(value, 150)
+
+    def test_mcp3(self):
+        value = mcp3(self.bids, self.offers)
+        self.assertEqual(value, 150)
 
 
 
