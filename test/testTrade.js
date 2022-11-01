@@ -1,5 +1,4 @@
 const DoublePriceAuction = artifacts.require("DoublePriceAuctionContract");
-const truffleAssert = require('truffle-assertions');
 const fs = require('fs');
 
 contract('DoublePriceAuction', (accounts) => {
