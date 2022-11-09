@@ -8,6 +8,7 @@ const Spatial = artifacts.require("Spatial");
 module.exports = function(deployer) {
   deployer.deploy(Math);
   deployer.deploy(Trigonometry);
+  deployer.link(Trigonometry, Spatial);
   deployer.deploy(Spatial);
   deployer.link(IterableMapping, DoublePriceAuctionLocation);
   deployer.link(Math, DoublePriceAuctionLocation);
