@@ -120,13 +120,13 @@ library Spatial {
         */
         function distance (int[2] memory ptA, int[2] memory ptB) public view returns (uint distanceNanometers_) {
 
-            /* int x1 = ptA[0];
+            int x1 = ptA[0];
             int y1 = ptA[1];
             int x2 = ptB[0];
             int y2 = ptB[1];
             uint across = (x2 - x1) < 0 ? uint((x2 - x1) * -1) : uint(x2 - x1);
             uint up = (y2 - y1) < 0 ? uint((y2 - y1) * -1) : uint(y2 - y1);
-            return nanodegreesToNanoradians(sqrt(int(across * across) + int(up * up))); */
+            return nanodegreesToNanoradians(sqrt(int(across * across) + int(up * up)));
 
         }
 
