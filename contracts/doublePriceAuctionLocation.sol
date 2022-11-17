@@ -49,10 +49,30 @@ contract DoublePriceAuctionLocation is IERC20, IDoublePriceAuctionContract   {
 
     function setLocation(int lat, int lng) public {
         location[msg.sender] = Location(lat, lng);
+
+        // Is consumer
+        if (bids.contains(msg.sender)) {
+            for (uint i=0; i < offers.size; i++) {
+                address _offer = offers.keys[i].key;
+                distance[msg.sender][_offer] = calcDistance(msg.sender, _offer);
+            }
+        }
+
+        // Is productor
+        if (offers.contains(msg.sender)) {
+            for (uint i=0; i < bids.size; i++) {
+                address _bid = bids.keys[i].key;
+                distance[_bid][msg.sender] = calcDistance(_bid, msg.sender);
+            }
+        }
     }
 
     function getLocation() public view returns(Location memory) {
         return location[msg.sender];
+    }
+
+    function getDistance(address a, address b) public view returns (uint) {
+        return distance[a][b];
     }
 
     function calcDistance(address a, address b) public view returns (uint) {
@@ -63,10 +83,6 @@ contract DoublePriceAuctionLocation is IERC20, IDoublePriceAuctionContract   {
         uint dlng = SignedMath.abs(location[a].lng - location[b].lng);
 
         return Math.sqrt(dlan ** 2 + dlng ** 2);
-    }
-
-    function distanceMatriz() public {
-
     }
 
     function registerBid(uint256 _value, uint8 _sourceType) public override returns (uint size) {

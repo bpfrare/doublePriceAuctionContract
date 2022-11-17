@@ -20,4 +20,28 @@ contract('DoublePriceAuction', (accounts) => {
         let dist = await doublePriceAuctionInstance.calcDistance.call(accounts[0], accounts[1]);
         assert.equal(dist.toNumber(), 654194, 'The should be 654194');
     });
+
+    it("should have distance(Offer, Bid)", async () => {
+        const doublePriceAuctionInstance = await DoublePriceAuctionLocation.deployed();
+        await doublePriceAuctionInstance.registerBid(1,10, {from: accounts[2]});
+        await doublePriceAuctionInstance.registerOffer(10,10, {from: accounts[3]});
+        await doublePriceAuctionInstance.setLocation(-23162580000, -45794539000, {from: accounts[3]});
+        await doublePriceAuctionInstance.setLocation(-23163217000, -45794390000, {from: accounts[2]});
+        
+        
+        let dist = await doublePriceAuctionInstance.getDistance.call(accounts[2], accounts[3]);
+        assert.equal(dist.toNumber(), 654194, 'The should be 654194');
+    });
+
+    it("should have distance(Bid, Offer)", async () => {
+        const doublePriceAuctionInstance = await DoublePriceAuctionLocation.deployed();
+        await doublePriceAuctionInstance.registerBid(1,10, {from: accounts[4]});
+        await doublePriceAuctionInstance.registerOffer(10,10, {from: accounts[5]});
+        await doublePriceAuctionInstance.setLocation(-23163217000, -45794390000, {from: accounts[4]});
+        await doublePriceAuctionInstance.setLocation(-23162580000, -45794539000, {from: accounts[5]});
+        
+        let dist = await doublePriceAuctionInstance.getDistance.call(accounts[4], accounts[5]);
+        assert.equal(dist.toNumber(), 654194, 'The should be 654194');
+    });
+
 });
