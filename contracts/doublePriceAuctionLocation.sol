@@ -8,6 +8,7 @@ import "./IterableMapping.sol";
 import "./Spatial.sol";
 import "./SignedMath.sol";
 import "./Math.sol";
+import "./Trigonometry.sol";
 
 struct Location {
     int lat;
@@ -75,14 +76,15 @@ contract DoublePriceAuctionLocation is IERC20, IDoublePriceAuctionContract   {
         return distance[a][b];
     }
 
-    function calcDistance(address a, address b) public view returns (uint) {
-        // Mesmo quadrante
-        // Converter para km só irá trazer mais cálculos, preciso apenas de um fator de distância entre os pontos
+    function calcDistance(address a, address b) public view returns (uint256) {
+        // Same Quadrant
 
         uint dlan = SignedMath.abs(location[a].lat - location[b].lat);
         uint dlng = SignedMath.abs(location[a].lng - location[b].lng);
 
-        return Math.sqrt(dlan ** 2 + dlng ** 2);
+        uint256 distance = Math.sqrt(dlan ** 2 + dlng ** 2);
+        distance = Trigonometry.radians(distance);
+        return (distance * Trigonometry.R) / 10**15; // 10**18 (10**9 ** 2) * 1000.
     }
 
     function registerBid(uint256 _value, uint8 _sourceType) public override returns (uint size) {
@@ -159,6 +161,10 @@ contract DoublePriceAuctionLocation is IERC20, IDoublePriceAuctionContract   {
         Iterator i = offers.iterateStart();
         (offerAddr, i) = findOffer(_bid, i);
     }
+
+    // function getLocationPrice(address _a, address _b) {
+
+    // }
 
     function findOffer(address _bid, Iterator _i) internal view returns (address offerAddr, Iterator inter) {
         // get the buyer

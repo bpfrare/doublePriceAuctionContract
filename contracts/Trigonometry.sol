@@ -43,6 +43,11 @@ library Trigonometry {
     uint8 public constant entry_bytes = 2;
     bytes public constant sin_table = "\x00\x00\x0c\x8c\x18\xf9\x25\x28\x30\xfb\x3c\x56\x47\x1c\x51\x33\x5a\x82\x62\xf1\x6a\x6d\x70\xe2\x76\x41\x7a\x7c\x7d\x89\x7f\x61\x7f\xff";
 
+    // R = 6371 km
+    uint256 public constant R = 6371; // (km)
+    // PI 3.14159265358 * 10**9
+    uint256 public constant pi = 3141592654;
+
     /**
      * Convenience function to apply a mask on an integer to extract a certain
      * number of bits. Using exponents since solidity still does not support
@@ -118,6 +123,10 @@ library Trigonometry {
             _angle += QUADRANT_LOW_MASK;
         }
         return sin(_angle);
+    }
+
+    function radians(uint256 _angle) public pure returns (uint256) {
+        return (_angle * pi / 180);
     }
 
 }
