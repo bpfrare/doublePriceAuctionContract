@@ -84,7 +84,7 @@ contract DoublePriceAuctionLocation is IERC20, IDoublePriceAuctionContract   {
 
         uint256 distance = Math.sqrt(dlan ** 2 + dlng ** 2);
         distance = Trigonometry.radians(distance);
-        return (distance * Trigonometry.R) / 10**15; // 10**18 (10**9 ** 2) * 1000.
+        return (distance * Trigonometry.R) / 10**15; // 10**18 <- sqrt(10**9 ** 2) * 10**9.
     }
 
     function registerBid(uint256 _value, uint8 _sourceType) public override returns (uint size) {
@@ -231,7 +231,7 @@ contract DoublePriceAuctionLocation is IERC20, IDoublePriceAuctionContract   {
 
     function trade() public {
         //TODO: sort list
-        for (uint i =0; i<bids.size;i++) {
+        for (uint i = 0; i < bids.size; i++) {
             processTransaction(bids.keys[i].key);
         }
     }
