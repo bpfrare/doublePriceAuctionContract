@@ -21,6 +21,8 @@ contract DoublePriceAuctionLocation is IERC20, IDoublePriceAuctionContract   {
     /* Location */
     mapping (address => mapping(address => uint)) private distance;
     mapping (address => Location) private location;
+
+    uint public Ro;
     
     /*
     NOTE:
@@ -32,12 +34,13 @@ contract DoublePriceAuctionLocation is IERC20, IDoublePriceAuctionContract   {
     uint8 public decimals;                //How many decimals to show.
     string public symbol;                 //An identifier: eg SBX
 
-    constructor(uint256 _initialAmount, string memory _tokenName, uint8 _decimalUnits, string  memory _tokenSymbol) {
+    constructor(uint256 _initialAmount, string memory _tokenName, uint8 _decimalUnits, string  memory _tokenSymbol, uint _Ro) {
         balances[msg.sender] = _initialAmount;               // Give the creator all initial tokens
         totalSupply = _initialAmount;                        // Update total supply
         name = _tokenName;                                   // Set the name for display purposes
         decimals = _decimalUnits;                            // Amount of decimals for display purposes
         symbol = _tokenSymbol;                               // Set the symbol for display purposes
+        Ro = _Ro;
     }
 
     function setLocation(int lat, int lng) public {
@@ -147,20 +150,28 @@ contract DoublePriceAuctionLocation is IERC20, IDoublePriceAuctionContract   {
         (offerAddr, i) = findOffer(_bid, i);
     }
 
-    // function getLocationPrice(address _a, address _b) {
+    function costByDistance(address a, address b, uint value) internal view returns(uint) {
+        return Ro * distance[a][b] * value;
+    }
 
-    // }
-
-    function findOffer(address _bid, Iterator _i) internal view returns (address offerAddr, Iterator inter) {
+    function findOffer(address _bid, Iterator _i) internal view returns (address, Iterator) {
         // get the buyer
         Bid memory bid = bids.get(_bid);
-        // look for a seller
+        // seek for a seller
         for (; offers.iterateValid(_i); _i = offers.iterateNext(_i)
         ) {
             (address _offerAddr, Bid memory _offer) = offers.iterateGet(_i);
+            
             // verify the condicions to find the seller
-            if (_offerAddr != _bid && _offer.value == bid.value && _offer.amount > 0) {
-                return (_offerAddr, _i);
+            if (_offerAddr != _bid && _offer.amount > 0) {
+                
+                // Cost with distance
+                uint cost_distance = costByDistance(_bid, _offerAddr, _offer.value);
+                
+                // If the cost with the distace is minus or equal I can buy!
+                if (cost_distance <= bid.value * Ro) {
+                    return (_offerAddr, _i);
+                }                
             }
         }
     }

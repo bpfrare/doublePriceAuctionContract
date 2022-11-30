@@ -15,5 +15,5 @@ module.exports = function(deployer) {
   
   deployer.link(IterableMapping, DoublePriceAuctionLocation);
   deployer.link(Trigonometry, DoublePriceAuctionLocation);
-  deployer.deploy(DoublePriceAuctionLocation, 1000, 'Energy Token', 0, 'ET');
+  deployer.deploy(DoublePriceAuctionLocation, 1000, 'Energy Token', 0, 'ET', 1000);
 };
