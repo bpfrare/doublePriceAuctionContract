@@ -1,4 +1,4 @@
-const DoublePriceAuction = artifacts.require("DoublePriceAuctionLocation");
+const Trigonometry = artifacts.require("Trigonometry");
 const fs = require('fs');
 const distance = require('euclidean-distance');
 
@@ -12,7 +12,7 @@ contract('Test Error location', (accounts) => {
 
     
     it(`should be the same distance`, async () => {
-      const doublePriceAuctionInstance = await DoublePriceAuction.deployed();
+      const TrigonometryInstance = await Trigonometry.deployed();
       for(let i=0; i < 2000; i++) {
         // Distance in Javascript
         let distJ = distance([unifesp.lat, unifesp.lng], [temp.lat, temp.lng]) 
@@ -21,7 +21,7 @@ contract('Test Error location', (accounts) => {
 
         let temp_s = {lat: Math.round((temp.lat * 10**9)), lng: Math.round((temp.lng * 10**9))};
         
-        let distS = await doublePriceAuctionInstance.calcDistance.call(unifesp_s, temp_s);
+        let distS = await TrigonometryInstance.calcDistance(unifesp_s, temp_s);
         
         // increase distance
         temp.lat -= 0.001;

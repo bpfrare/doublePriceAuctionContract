@@ -5,15 +5,7 @@ pragma solidity >=0.5.0 <0.9;
 import "./IERC20.sol";
 import "./IDoublePriceAuctionContract.sol";
 import "./IterableMapping.sol";
-import "./Spatial.sol";
-import "./SignedMath.sol";
-import "./Math.sol";
 import "./Trigonometry.sol";
-
-struct Location {
-    int lat;
-    int lng;    
-}
 
 contract DoublePriceAuctionLocation is IERC20, IDoublePriceAuctionContract   {
     
@@ -76,18 +68,8 @@ contract DoublePriceAuctionLocation is IERC20, IDoublePriceAuctionContract   {
         return distance[a][b];
     }
 
-    function calcDistance(Location memory a, Location memory b) public view returns (uint256) {
-        // Same Quadrant
-        uint dlan = SignedMath.abs(a.lat - b.lat);
-        uint dlng = SignedMath.abs(a.lng - b.lng);
-
-        uint256 distance = Math.sqrt(dlan ** 2 + dlng ** 2);
-        distance = Trigonometry.radians(distance);
-        return (distance * Trigonometry.R) / 10**15; // 10**18 <- sqrt(10**9 ** 2) * 10**9.
-    }
-
     function calcDistance(address a, address b) public view returns (uint256) {
-        return calcDistance(location[a], location[b]);
+        return Trigonometry.calcDistance(location[a], location[b]);
     }
 
     function registerBid(uint256 _value, uint8 _sourceType) public override returns (uint size) {

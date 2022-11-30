@@ -24,6 +24,14 @@
 
 pragma solidity ^0.8.0;
 
+import "./Math.sol";
+import "./SignedMath.sol";
+
+struct Location {
+    int lat;
+    int lng;    
+}
+
 
 library Trigonometry {
 
@@ -129,4 +137,13 @@ library Trigonometry {
         return (_angle * pi / 180);
     }
 
+    function calcDistance(Location memory a, Location memory b) public pure returns (uint256) {
+        // Same Quadrant
+        uint dlan = SignedMath.abs(a.lat - b.lat);
+        uint dlng = SignedMath.abs(a.lng - b.lng);
+
+        uint256 distance = Math.sqrt(dlan ** 2 + dlng ** 2);
+        distance = radians(distance);
+        return (distance * R) / 10**15; // 10**18 <- sqrt(10**9 ** 2) * 10**9.
+    }
 }
