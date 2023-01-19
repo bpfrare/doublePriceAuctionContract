@@ -4,10 +4,14 @@ const fs = require('fs');
 contract('DoublePriceLocation -> Set Location', (accounts) => {
   for(let i=0;i<100;i++) {
     let aux = ''
+    let cost = 0;
     it(`should add ${i} bidder and offer`, async () => {
       const doublePriceAuctionInstance = await DoublePriceAuction.deployed();
-      await doublePriceAuctionInstance.registerBid(i+1, 1, {from: accounts[i]});
-      await doublePriceAuctionInstance.registerOffer(i+1, 1, {from: accounts[i]});
+      let tx;
+      tx = await doublePriceAuctionInstance.registerBid(i+1, 1, {from: accounts[i]});
+      cost += tx.receipt.gasUsed;
+      tx = await doublePriceAuctionInstance.registerOffer(i+1, 1, {from: accounts[i]});
+      cost += tx.receipt.gasUsed;
     });
     
     it(`should set location for ${i} bidder and offer`, async () => {
@@ -15,7 +19,8 @@ contract('DoublePriceLocation -> Set Location', (accounts) => {
       let spend = new Date();
       let tx = await doublePriceAuctionInstance.setLocation(-23163217000, -45794390000, {from: accounts[i]});
       let spend_time = new Date().getTime() - spend.getTime()
-      aux = (i+1).toString() + ';' + spend_time.toString() + ';' + tx.receipt.gasUsed.toString() + '\r\n';
+      cost += tx.receipt.gasUsed;
+      aux = (i+1).toString() + ';' + spend_time.toString() + ';' + cost.toString() + '\r\n';
       fs.appendFile('./results/location/setLocation.csv', aux, err => {
         if (err) {
           console.error(err)
