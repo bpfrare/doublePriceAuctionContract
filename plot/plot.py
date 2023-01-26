@@ -27,9 +27,11 @@ def read_plot(path, name, xlabel):
     plt.rcParams["figure.figsize"] = [7.50, 3.50]
     plt.rcParams["figure.autolayout"] = True
 
-    columns = ["Quantidade", "Tempo", "Gas"]
+    columns = ["Quantidade", "Tempo", "Gas", "Price"]
 
     df = pd.read_csv(path, delimiter=';',  names=columns)
+
+    del df['Price']
 
     print('Tempo (mean e std):', df['Tempo'].mean(), df['Tempo'].std())
     print('Gas (mean, std, custo):', df['Gas'].mean(), df['Gas'].std(), 'USD $ ' + str(round(gas_price / 1000000000 * df['Gas'].mean() * dollar , 2)))
