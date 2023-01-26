@@ -44,4 +44,15 @@ contract('DoublePriceAuction', (accounts) => {
         assert.equal(dist.toNumber(), 72, 'The should be 72 meters');
     });
 
+    it("should have distance(Bid, Offer)", async () => {
+        const doublePriceAuctionInstance = await DoublePriceAuctionLocation.deployed();
+        await doublePriceAuctionInstance.registerBid(1,10, {from: accounts[4]});
+        await doublePriceAuctionInstance.registerOffer(10,10, {from: accounts[5]});
+        await doublePriceAuctionInstance.setLocation(-23163217000, -45794390000, {from: accounts[4]});
+        await doublePriceAuctionInstance.setLocation(-23162580000, -45794539000, {from: accounts[5]});
+        
+        let dist = await doublePriceAuctionInstance.getDistance.call(accounts[4], accounts[5]);
+        assert.equal(dist.toNumber(), 72, 'The should be 72 meters');
+    });
+
 });

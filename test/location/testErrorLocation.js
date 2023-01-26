@@ -24,6 +24,7 @@ contract('Test Error location', (accounts) => {
         let distS = await TrigonometryInstance.calcDistance(unifesp_s, temp_s);
         
         // increase distance
+        // Variar o angulo e distancia
         temp.lat -= 0.001;
         temp.lng -= 0.001;
         console.log(temp);
