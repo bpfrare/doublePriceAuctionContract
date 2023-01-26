@@ -5,7 +5,7 @@ contract('DoublePriceAuction', (accounts) => {
 
   let temp = {lat: -23.163217, lng: -45.794390}
   
-  for(let i=0;i<30;i++) {
+  for(let i=0;i<100;i++) {
     it(`should add ${i} bidder and ${i} Offer`, async () => {
       const doublePriceAuctionInstance = await DoublePriceAuctionLocation.deployed();
       await doublePriceAuctionInstance.registerBid(100, 59, {from: accounts[i]});
