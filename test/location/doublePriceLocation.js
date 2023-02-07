@@ -70,7 +70,6 @@ contract('DoublePriceAuctionLocation', (accounts) => {
          */
         const doublePriceAuctionInstance = await DoublePriceAuctionLocation.deployed();
 
-        IterableMapping
         let values = [125, 100, 150, 175, 200, 225];
         let bids = [910, 1000, 830, 760, 700, 650];
         let offer = [650, 500, 770, 870, 950, 1010];
@@ -84,11 +83,14 @@ contract('DoublePriceAuctionLocation', (accounts) => {
             await doublePriceAuctionInstance.registerOffer(values[i],2, {from: accounts[values.length + i]});
             await doublePriceAuctionInstance.placeOffer(offer[i], {from: accounts[values.length + i]});
 
+            await doublePriceAuctionInstance.setLocation(-23163217000, -45794390000, {from: accounts[i]});
+            await doublePriceAuctionInstance.setLocation(-23163217000, -45794390000, {from: accounts[values.length + i]});
+
         }
 
-        let mcp = await doublePriceAuctionInstance.mcp.call();
+        let mcp = await doublePriceAuctionInstance.mcp.call(accounts[0]);
         console.log(mcp);
-        assert.equal(mcp, 150);
+        assert.equal(mcp.toNumber(), 150);
     });
 
 });
