@@ -232,13 +232,7 @@ contract DoublePriceAuctionLocation is IERC20, IDoublePriceAuctionContract   {
         }
     }
 
-    function mcp() public override returns(uint256 value) {
-        Bid[] memory _bids = getSortedBids();
-        // Bid referencial
-        Bid[] memory _offers = getOffers();
-        _offers = IterableMapping.sortAsc(_offers);
-        
-
+    function mcp(Bid[] memory _bids, Bid[] memory _offers) public returns(uint256 value) {
         uint256 i = 0;
         uint256 j = 0;
         while(i < bids.size || j < offers.size ) {
@@ -257,6 +251,33 @@ contract DoublePriceAuctionLocation is IERC20, IDoublePriceAuctionContract   {
                 j++;
             }            
         }
+    }
+
+    function mcp() public override returns(uint256 value) {
+        Bid[] memory _bids = getSortedBids();
+        Bid[] memory _offers = getSortedOffer();
+        return mcp(_bids, _offers);
+    }
+    
+    function mcp(address bid) public returns(uint256 value) {
+        Bid[] memory _bids = getSortedBids();
+        // Bid referencial
+        Bid[] memory _offers;
+        _offers = new Bid[](offers.size);
+        
+        uint k = 0;
+        for (
+            Iterator i = offers.iterateStart();
+            offers.iterateValid(i);
+            i = offers.iterateNext(i)
+        ) {
+            (address oaddr, Bid memory offer) = offers.iterateGet(i);
+            _offers[k] = offer;
+            _offers[k].value = costByDistance(bid, oaddr, offer.value);
+            k++;
+        }
+        _offers = IterableMapping.sortAsc(_offers);
+        return mcp(_bids, _offers);
     }
 
     function transfer(address _to, uint256 _value) public override  returns (bool success) {
