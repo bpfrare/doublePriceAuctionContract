@@ -151,7 +151,7 @@ contract DoublePriceAuctionLocation is IERC20, IDoublePriceAuctionContract   {
     }
 
     function costByDistance(address a, address b, uint value) internal view returns(uint) {
-        return Ro * distance[a][b] * value;
+        return distance[a][b] + (Ro * value);
     }
 
     function findOffer(address _bid, Iterator _i) internal view returns (address, Iterator) {
@@ -234,7 +234,10 @@ contract DoublePriceAuctionLocation is IERC20, IDoublePriceAuctionContract   {
 
     function mcp() public override returns(uint256 value) {
         Bid[] memory _bids = getSortedBids();
-        Bid[] memory _offers = getSortedOffer();
+        // Bid referencial
+        Bid[] memory _offers = getOffers();
+        _offers = IterableMapping.sortAsc(_offers);
+        
 
         uint256 i = 0;
         uint256 j = 0;

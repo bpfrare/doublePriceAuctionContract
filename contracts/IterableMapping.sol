@@ -145,4 +145,29 @@ library IterableMapping {
         if (i < right)
             quickSortDesc(self, arr, i, right);
     }
+
+    function sortAsc(Bid[] memory data) public returns(Bid[] memory) {
+       quickSortAsc(data, int(0), int(data.length - 1));
+       return data;
+    }
+
+    function quickSortAsc(Bid[] memory data, int left, int right) internal {
+        int i = left;
+        int j = right;
+        if(i==j) return;
+        Bid memory pivot = data[uint(left + (right - left) / 2)];
+        while (i <= j) {
+            while (data[uint(i)].value < pivot.value) i++;
+            while (pivot.value < data[uint(j)].value) j--;
+            if (i <= j) {
+                (data[uint(i)], data[uint(j)]) = (data[uint(j)], data[uint(i)]);
+                i++;
+                j--;
+            }
+        }
+        if (left < j)
+            quickSortAsc(data, left, j);
+        if (i < right)
+            quickSortAsc(data, i, right);
+    }
 }
