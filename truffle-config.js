@@ -77,10 +77,14 @@ module.exports = {
       skipDryRun: true     // Skip dry run before migrations? (default: false for public nets )
     },
     sepolia: {
-      provider: () => new HDWalletProvider(mnemonic, `https://sepolia.infura.io/v3/${key}`),
+      provider: () => new HDWalletProvider({
+        mnemonic: mnemonic,
+        providerOrUrl: `https://sepolia.infura.io/v3/${key}`,
+        numberOfAddresses: 100
+      }),
       network_id: 11155111,       // goerli's id
       // gas: 5500000,        // goerli has a lower block limit than mainnet
-      confirmations: 2,    // # of confirmations to wait between deployments. (default: 0)
+      confirmations: 1,    // # of confirmations to wait between deployments. (default: 0)
       timeoutBlocks: 200,  // # of blocks before a deployment times out  (minimum/default: 50)
       // skipDryRun: true     // Skip dry run before migrations? (default: false for public nets )
     },
@@ -97,15 +101,15 @@ module.exports = {
   mocha: {
     // timeout: 100000
     enableTimeouts: false,
-    reporter: 'eth-gas-reporter',
-    reporterOptions: {
-      excludeContracts: ['Migrations']
-    },
-    reporterOptions: {
-      currency: 'BRL',
-      coinmarketcap: 'b491ea23-d198-4fb1-8a43-ef297f318df6',
-      showTimeSpent: true
-    }
+    // reporter: 'eth-gas-reporter',
+    // reporterOptions: {
+    //   excludeContracts: ['Migrations']
+    // },
+    // reporterOptions: {
+    //   currency: 'BRL',
+    //   coinmarketcap: 'b491ea23-d198-4fb1-8a43-ef297f318df6',
+    //   showTimeSpent: true
+    // }
   },
 
   // Configure your compilers
