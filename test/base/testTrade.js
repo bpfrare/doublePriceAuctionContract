@@ -15,7 +15,6 @@ contract('DoublePriceAuction', (accounts) => {
     
     it(`should run trade for ${i} bidder and ${i} Offer`, async () => {
       let aux = ''
-      await new Promise(r => setTimeout(r, 1000*i));
       const doublePriceAuctionInstance = await DoublePriceAuction.deployed();
       let spend = new Date();
       let tx = await doublePriceAuctionInstance.trade();
