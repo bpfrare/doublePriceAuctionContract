@@ -9,7 +9,7 @@ module.exports = async function(callback) {
   let instance = await DoublePriceAuctionContract.deployed();
   
 
-  for(let i=71;i<100;i++) {
+  for(let i=0;i<100;i++) {
     console.log(i);
     console.log(accounts[i]);
     let balance = await web3.eth.getBalance(accounts[i]);
