@@ -80,6 +80,7 @@ module.exports = {
       provider: () => new HDWalletProvider({
         mnemonic: mnemonic,
         providerOrUrl: `https://sepolia.infura.io/v3/${key}`,
+        // providerOrUrl: `https://rpc.sepolia.org`,
         numberOfAddresses: 100
       }),
       network_id: 11155111,       // goerli's id
