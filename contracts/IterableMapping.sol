@@ -86,16 +86,6 @@ library IterableMapping {
         return Iterator.wrap(keyIndex);
     }
 
-    function sortAsc(itmap storage self) public returns(Bid[] memory value) {
-       value = new Bid[](self.size);
-       KeyFlag[] memory aux = self.keys;
-       quickSortAsc(self, aux, int(0), int(self.size - 1));
-       for (uint i=0; i < self.size;i++) {
-            value[i] = self.data[aux[i].key].value;
-        }
-       return value;
-    }
-
     function sortDesc(itmap storage self) public returns(Bid[] memory value) {
        value = new Bid[](self.size);
        KeyFlag[] memory aux = self.keys;
@@ -104,26 +94,6 @@ library IterableMapping {
             value[i] = self.data[aux[i].key].value;
         }
        return value;
-    }
-
-    function quickSortAsc(itmap storage self, KeyFlag[] memory arr, int left, int right) internal {
-        int i = left;
-        int j = right;
-        if(i==j) return;
-        Bid memory pivot = self.data[arr[uint(left + (right - left) / 2)].key].value;
-        while (i <= j) {
-            while (self.data[arr[uint(i)].key].value.value < pivot.value) i++;
-            while (pivot.value < self.data[arr[uint(j)].key].value.value) j--;
-            if (i <= j) {
-                (arr[uint(i)], arr[uint(j)]) = (arr[uint(j)], arr[uint(i)]);
-                i++;
-                j--;
-            }
-        }
-        if (left < j)
-            quickSortAsc(self, arr, left, j);
-        if (i < right)
-            quickSortAsc(self, arr, i, right);
     }
 
     function quickSortDesc(itmap storage self, KeyFlag[] memory arr, int left, int right) internal {
@@ -146,9 +116,39 @@ library IterableMapping {
             quickSortDesc(self, arr, i, right);
     }
 
+    function sortAsc(itmap storage self) public returns(Bid[] memory value) {
+       value = new Bid[](self.size);
+       KeyFlag[] memory aux = self.keys;
+       quickSortAsc(self, aux, int(0), int(self.size - 1));
+       for (uint i=0; i < self.size;i++) {
+            value[i] = self.data[aux[i].key].value;
+        }
+       return value;
+    }
+
     function sortAsc(Bid[] memory data) public returns(Bid[] memory) {
        quickSortAsc(data, int(0), int(data.length - 1));
        return data;
+    }
+
+    function quickSortAsc(itmap storage self, KeyFlag[] memory arr, int left, int right) internal {
+        int i = left;
+        int j = right;
+        if(i==j) return;
+        Bid memory pivot = self.data[arr[uint(left + (right - left) / 2)].key].value;
+        while (i <= j) {
+            while (self.data[arr[uint(i)].key].value.value < pivot.value) i++;
+            while (pivot.value < self.data[arr[uint(j)].key].value.value) j--;
+            if (i <= j) {
+                (arr[uint(i)], arr[uint(j)]) = (arr[uint(j)], arr[uint(i)]);
+                i++;
+                j--;
+            }
+        }
+        if (left < j)
+            quickSortAsc(self, arr, left, j);
+        if (i < right)
+            quickSortAsc(self, arr, i, right);
     }
 
     function quickSortAsc(Bid[] memory data, int left, int right) internal {
