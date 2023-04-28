@@ -102,28 +102,28 @@ library IterableMapping {
     }
 
     function sortDesc(Bid[] memory data) public returns(Bid[] memory) {
-       quickSortDesc(data, int(0), int(data.length - 1));
+       quickSortDesc(data, uint(0), uint(data.length - 1));
        return data;
     }
 
-    function quickSortDesc(Bid[] memory data, int left, int right) internal {
-        int i = left;
-        int j = right;
+    function quickSortDesc(Bid[] memory data, uint left, uint right) internal {
+        uint i = left;
+        uint j = right;
         if(i==j) return;
         Bid memory pivot = data[uint(left + (right - left) / 2)];
         while (i <= j) {
-            while (data[uint(i)].value > pivot.value) i++;
-            while (pivot.value > data[uint(j)].value) j--;
+            while (data[i].value > pivot.value) i++;
+            while (pivot.value > data[j].value) j--;
             if (i <= j) {
-                (data[uint(i)], data[uint(j)]) = (data[uint(j)], data[uint(i)]);
+                (data[i], data[j]) = (data[j], data[i]);
                 i++;
                 j--;
             }
         }
         if (left < j)
-            quickSortAsc(data, left, j);
+            quickSortDesc(data, left, j);
         if (i < right)
-            quickSortAsc(data, i, right);
+            quickSortDesc(data, i, right);
     }
 
     function sortAsc(itmap storage self) public returns(Bid[] memory data) {
@@ -132,20 +132,20 @@ library IterableMapping {
     }
 
     function sortAsc(Bid[] memory data) public returns(Bid[] memory) {
-       quickSortAsc(data, int(0), int(data.length - 1));
+       quickSortAsc(data, uint(0), uint(data.length - 1));
        return data;
     }
 
-    function quickSortAsc(Bid[] memory data, int left, int right) internal {
-        int i = left;
-        int j = right;
+    function quickSortAsc(Bid[] memory data, uint left, uint right) internal {
+        uint i = left;
+        uint j = right;
         if(i==j) return;
         Bid memory pivot = data[uint(left + (right - left) / 2)];
         while (i <= j) {
-            while (data[uint(i)].value < pivot.value) i++;
-            while (pivot.value < data[uint(j)].value) j--;
+            while (data[i].value < pivot.value) i++;
+            while (pivot.value < data[j].value) j--;
             if (i <= j) {
-                (data[uint(i)], data[uint(j)]) = (data[uint(j)], data[uint(i)]);
+                (data[i], data[j]) = (data[j], data[i]);
                 i++;
                 j--;
             }
