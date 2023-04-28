@@ -93,17 +93,7 @@ contract DoublePriceAuctionLocation is IERC20, IDoublePriceAuctionContract   {
     }
 
     function getBids() public override view returns (Bid[] memory value) {
-        value = new Bid[](bids.size);
-        uint j = 0;
-        for (
-            Iterator i = bids.iterateStart();
-            bids.iterateValid(i);
-            i = bids.iterateNext(i)
-        ) {
-            (, Bid memory bid) = bids.iterateGet(i);
-            value[j] = bid;
-            j++;
-        }
+        value = bids.toBids();
     }
 
     function getSortedBids() public returns (Bid[] memory value) {
@@ -124,17 +114,7 @@ contract DoublePriceAuctionLocation is IERC20, IDoublePriceAuctionContract   {
     }
 
     function getOffers() public override view returns (Bid[] memory value) {
-        value = new Bid[](offers.size);
-        uint j = 0;
-        for (
-            Iterator i = offers.iterateStart();
-            offers.iterateValid(i);
-            i = offers.iterateNext(i)
-        ) {
-            (, Bid memory offer) = offers.iterateGet(i);
-            value[j] = offer;
-            j++;
-        }
+        value = offers.toBids();
     }
 
     function getOffersSize() public view returns (uint size) {
@@ -145,13 +125,13 @@ contract DoublePriceAuctionLocation is IERC20, IDoublePriceAuctionContract   {
         return offers.get(msg.sender);
     }
 
+    function costByDistance(address a, address b, uint value) internal view returns(uint) {
+        return distance[a][b] + (Ro * value);
+    }
+
     function findOffer(address _bid) public override returns (address offerAddr) {
         Iterator i = offers.iterateStart();
         (offerAddr, i) = findOffer(_bid, i);
-    }
-
-    function costByDistance(address a, address b, uint value) internal view returns(uint) {
-        return distance[a][b] + (Ro * value);
     }
 
     function findOffer(address _bid, Iterator _i) internal view returns (address, Iterator) {
@@ -176,8 +156,7 @@ contract DoublePriceAuctionLocation is IERC20, IDoublePriceAuctionContract   {
         }
     }
 
-    function processTransaction(address _bid) public returns (bool success) {
-        
+    function processTransaction(address _bid) public returns (bool success) {        
 
         // Check if the buyer has enought token
         Bid memory bid = bids.get(_bid);

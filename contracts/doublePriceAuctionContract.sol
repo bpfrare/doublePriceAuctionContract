@@ -53,17 +53,7 @@ contract DoublePriceAuctionContract is IERC20, IDoublePriceAuctionContract   {
     }
 
     function getBids() public override view returns (Bid[] memory value) {
-        value = new Bid[](bids.size);
-        uint j = 0;
-        for (
-            Iterator i = bids.iterateStart();
-            bids.iterateValid(i);
-            i = bids.iterateNext(i)
-        ) {
-            (, Bid memory bid) = bids.iterateGet(i);
-            value[j] = bid;
-            j++;
-        }
+        value = bids.toBids();
     }
 
     function getSortedBids() public returns (Bid[] memory value) {
@@ -84,17 +74,7 @@ contract DoublePriceAuctionContract is IERC20, IDoublePriceAuctionContract   {
     }
 
     function getOffers() public override view returns (Bid[] memory value) {
-        value = new Bid[](offers.size);
-        uint j = 0;
-        for (
-            Iterator i = offers.iterateStart();
-            offers.iterateValid(i);
-            i = offers.iterateNext(i)
-        ) {
-            (, Bid memory offer) = offers.iterateGet(i);
-            value[j] = offer;
-            j++;
-        }
+        value = offers.toBids();
     }
 
     function getOffersSize() public view returns (uint size) {
