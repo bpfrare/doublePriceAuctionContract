@@ -138,8 +138,7 @@ contract DoublePriceAuctionLocation is IERC20, IDoublePriceAuctionContract   {
         // get the buyer
         Bid memory bid = bids.get(_bid);
         // seek for a seller
-        for (; offers.iterateValid(_i); _i = offers.iterateNext(_i)
-        ) {
+        for (; offers.iterateValid(_i); _i = offers.iterateNext(_i)) {
             (address _offerAddr, Bid memory _offer) = offers.iterateGet(_i);
             
             // verify the condicions to find the seller
@@ -205,7 +204,6 @@ contract DoublePriceAuctionLocation is IERC20, IDoublePriceAuctionContract   {
     }
 
     function trade() public {
-        //TODO: sort list
         for (uint i = 0; i < bids.size; i++) {
             processTransaction(bids.keys[i].key);
         }
