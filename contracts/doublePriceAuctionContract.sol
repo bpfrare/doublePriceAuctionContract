@@ -112,13 +112,13 @@ contract DoublePriceAuctionContract is IERC20, IDoublePriceAuctionContract   {
         require(balances[_bid] >= bid.amount, "token balance is lower than the value requested");
 
         // initial value for exchange
-        uint256 _value = bid.amount;
+        uint256 _amount = bid.amount;
         
         // find a seller, if doesn't find throw an error
         Iterator i = offers.iterateStart();
         address offer;
         Bid memory bidOffer;
-        while(_value > 0 && offers.iterateValid(i)) {
+        while(_amount > 0 && offers.iterateValid(i)) {
             (offer, i) = findOffer(_bid, i);
             // didn't find any match
             if (offer == address(0)) {
@@ -127,12 +127,12 @@ contract DoublePriceAuctionContract is IERC20, IDoublePriceAuctionContract   {
             bidOffer = offers.get(offer);
             
             // Check if the seller has enought energy to sell
-            if (bidOffer.amount < _value) {
+            if (bidOffer.amount < _amount) {
                 transferEnergy(_bid, offer, bidOffer.amount);
-                _value -= bidOffer.amount;
+                _amount -= bidOffer.amount;
             } else {
-                transferEnergy(_bid, offer, _value);
-                _value = 0;
+                transferEnergy(_bid, offer, _amount);
+                _amount = 0;
             }
             // jump to next
             i = offers.iterateNext(i);
