@@ -1,19 +1,5 @@
-import argparse
 import pandas as pd
 import matplotlib.pyplot as plt
-
-my_parser = argparse.ArgumentParser(description='Plot chart from CSV')
-
-my_parser.add_argument('Name',
-                       metavar='name',
-                       type=str,
-                       help='Plot name')
-
-my_parser.add_argument('Xlabel',
-                       metavar='xlabel',
-                       type=str,
-                       help='X Label name',
-                       default='Quantidade')
 
 dollar = 1877.95
 gas_price = 30
@@ -38,5 +24,8 @@ def read_plot(name, xlabel):
 
 
 if __name__ == '__main__':
-    args = my_parser.parse_args()
-    read_plot(args.Name, args.Xlabel)
+    read_plot('registerBidders', 'Quantidade de Prossumidores')
+    read_plot('placeBid', 'Quantidade de Compradores')
+    read_plot('findOffer', 'Quantidade de Vendedores')
+    read_plot('trade', 'Quantidade de Prossumidores')
+    read_plot('mcp', 'Quantidade de Prossumidores')
