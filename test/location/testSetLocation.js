@@ -21,7 +21,7 @@ contract('DoublePriceLocation -> Set Location', (accounts) => {
       let spend_time = new Date().getTime() - spend.getTime()
       cost += tx.receipt.gasUsed;
       aux = (i+1).toString() + ';' + spend_time.toString() + ';' + cost.toString() + '\r\n';
-      fs.appendFile('./results/location/setLocation.csv', aux, err => {
+      fs.appendFile('./results/location/registerBidders.csv', aux, err => {
         if (err) {
           console.error(err)
         }
