@@ -138,7 +138,14 @@ library Trigonometry {
     }
 
     function calcDistance(Location memory a, Location memory b) public pure returns (uint256) {
-        // Same Quadrant
+        
+        // Make all values positive
+        // Switf to same quadrant
+        a.lat = a.lat + 100 * 10**9; // -90 to +90
+        b.lat = b.lat + 100 * 10**9;
+        a.lng = a.lng + 200 * 10**9; // -180 to =180
+        b.lng = b.lng + 200 * 10**9;
+        
         uint dlan = SignedMath.abs(a.lat - b.lat);
         uint dlng = SignedMath.abs(a.lng - b.lng);
 
