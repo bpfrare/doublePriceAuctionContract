@@ -1,7 +1,7 @@
 <a name="readme-top"></a>
 
 <!-- ABOUT THE PROJECT -->
-## About The Project
+## Double Price Auction in Blockchain
 
 This project proposes the development and analysis the behavior of the double price auction in an smart contract. This contract will be able to create an order book so that producers and consumers can register their respective intentions. Two smart contracts will be implemented in Solidity programming language to operate on the Ethereum network. The first aims to establish the base market. The second will add the distance parameter as a metric for defining the price.
 
